@@ -9770,6 +9770,10 @@ var _Timer = __webpack_require__(190);
 
 var _Timer2 = _interopRequireDefault(_Timer);
 
+var _PokemonInfo = __webpack_require__(193);
+
+var _PokemonInfo2 = _interopRequireDefault(_PokemonInfo);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -9793,7 +9797,17 @@ var Test = function (_React$Component) {
             return _react2.default.createElement(
                 'div',
                 { id: 'poke-team', className: 'container-fluid' },
-                _react2.default.createElement(_Timer2.default, { timeToRaidEnd: '00:00:31' })
+                _react2.default.createElement(_Timer2.default, { timeToRaidEnd: '00:00:31' }),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'row' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-6' },
+                        _react2.default.createElement(_PokemonInfo2.default, { pokemonName: 'Feralligator', raidLvl: '3' })
+                    ),
+                    _react2.default.createElement('div', { className: 'col-md-6' })
+                )
             );
         }
     }]);
@@ -39107,6 +39121,88 @@ var Timer = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Timer;
+
+/***/ }),
+/* 191 */,
+/* 192 */,
+/* 193 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(49);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PokemonInfo = function (_React$Component) {
+    _inherits(PokemonInfo, _React$Component);
+
+    function PokemonInfo(props) {
+        _classCallCheck(this, PokemonInfo);
+
+        var _this = _possibleConstructorReturn(this, (PokemonInfo.__proto__ || Object.getPrototypeOf(PokemonInfo)).call(this, props));
+
+        _this.maxRaidLvl = 5;
+        _this.blackStarCode = 9733;
+        _this.whiteStarCode = 9734;
+        return _this;
+    }
+
+    _createClass(PokemonInfo, [{
+        key: 'getStars',
+        value: function getStars(raidLvl) {
+            var number = parseInt(raidLvl);
+            var stars = '';
+
+            for (var i = 1; i <= this.maxRaidLvl; i++) {
+                if (i < number) {
+                    stars = stars + String.fromCharCode(this.blackStarCode);
+                } else {
+                    stars = stars + String.fromCharCode(this.whiteStarCode);
+                }
+            }
+
+            return stars;
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'row' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'col-md-12 text-center' },
+                    this.props.pokemonName
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'col-md-12 text-center' },
+                    this.getStars(this.props.raidLvl)
+                )
+            );
+        }
+    }]);
+
+    return PokemonInfo;
+}(_react2.default.Component);
+
+exports.default = PokemonInfo;
 
 /***/ })
 /******/ ]);
