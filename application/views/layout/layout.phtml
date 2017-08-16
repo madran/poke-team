@@ -1,0 +1,15 @@
+<?php echo $this->doctype() ?>
+<html>
+    <head>
+        <?php echo $this->headTitle(); ?>
+        <?php echo $this->headMeta(); ?>
+        <?php echo $this->headLink(); ?>
+    </head>
+    <body>
+        <div id="poke-team">
+            <?php echo $this->layout()->content; ?>
+        </div>
+        
+        <?php echo $this->headScript(); ?>
+    </body>
+</html>
