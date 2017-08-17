@@ -8,6 +8,8 @@ import ReactDOM from 'react-dom';
 
 import Timer from '../js/Timer.jsx';
 import PokemonInfo from '../js/PokemonInfo.jsx';
+import PokeMasterCounter from '../js/PokeMasterCounter.jsx';
+import IWillComeButton from '../js/IWillComeButton.jsx';
 
 class Test extends React.Component
 {
@@ -18,6 +20,8 @@ class Test extends React.Component
                 <div className="row">
                     <div className="col-md-6">
                         <PokemonInfo pokemonName="Feralligator" raidLvl="3"/>
+                        <PokeMasterCounter number="7" />
+                        <IWillComeButton />
                     </div>
                     <div className="col-md-6">
                     </div>
