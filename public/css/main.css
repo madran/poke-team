@@ -1,2 +1,16 @@
 @import url("normalize.css");
 @import url("open-iconic/open-iconic-bootstrap.css");
+@import url("../../node_modules/ladda/dist/ladda.min.css");
+
+.i-will-come-buttons {
+    width: 150px;
+}
+
+#poke-master-counter-text {
+    font-size: 50px;
+}
+
+.i-will-come-button {
+    height: 100px;
+    width: 100%;
+}

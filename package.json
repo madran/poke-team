@@ -23,7 +23,8 @@
   "devDependencies": {
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^3.0.0",
-    "file-loader": "^0.11.2"
+    "file-loader": "^0.11.2",
+    "ladda": "^1.0.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

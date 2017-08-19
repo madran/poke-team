@@ -29,7 +29,7 @@ export default class PokemonInfo extends React.Component
         return (
             <div className="row">
                 <div className="col-md-12 text-center">
-                    {this.props.pokemonName}
+                    <h3>{this.props.pokemonName}</h3>
                 </div>
                 <div className="col-md-12 text-center">
                     {this.getStars(this.props.raidLvl)}

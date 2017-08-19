@@ -14,6 +14,16 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         ));
     }
     
+    public function _initRouting()
+    {
+        $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/routing.ini', 'production');
+        
+        $this->bootstrap('FrontController');
+        $frontController = $this->getResource('FrontController');
+        $router = $frontController->getRouter();
+        $router->addConfig($config, 'routes');
+    }
+    
     public function _initViewHelpers()
     {
         $this->bootstrap('view');

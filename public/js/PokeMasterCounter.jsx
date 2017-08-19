@@ -8,8 +8,8 @@ export default class PokeMasterCounter extends React.Component
     
     render() {
         return (
-            <div className="row">
-                <div className="col-md-12 text-center">
+            <div className="row mt-3">
+                <div id="poke-master-counter-text" className="col-md-12 text-center">
                     <span className="oi oi-person" title="person" aria-hidden="true"></span> x {this.props.number}
                 </div>
             </div>

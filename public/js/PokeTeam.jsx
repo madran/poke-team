@@ -5,14 +5,96 @@ import 'bootstrap';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Ladda from 'ladda';
 
 import Timer from '../js/Timer.jsx';
 import PokemonInfo from '../js/PokemonInfo.jsx';
 import PokeMasterCounter from '../js/PokeMasterCounter.jsx';
 import IWillComeButton from '../js/IWillComeButton.jsx';
+import IWillComeForm from '../js/IWillComeForm.jsx';
+import IComming from '../js/IComming.jsx';
+import ListOfIncomingPokeMasters from '../js/ListOfIncomingPokeMasters.jsx';
 
 class Test extends React.Component
 {
+    constructor(props) {
+        super(props);
+        
+        var userState = this.props.isComming ? 'incomming' : 'not_comming';
+        
+        this.state = {
+            userState: userState,
+            showError: false
+        };
+        
+        this.showTimeList = this.showTimeList.bind(this);
+        this.hideTimeList = this.hideTimeList.bind(this);
+        this.resign = this.resign.bind(this);
+        this.saveTime = this.saveTime.bind(this);
+    }
+    
+    showTimeList() {
+        this.setState({ userState: 'registering_for_come' });
+    }
+    
+    hideTimeList() {
+        this.setState({ userState: 'not_comming' });
+    }
+    
+    resign() {
+        this.setState({ userState: 'not_comming' });
+    }
+    
+    saveTime(hours, minutes, event) {
+        var button = Ladda.create(event.target);
+        
+        $.ajax({
+            url: '/save',
+            method: 'post',
+            context: this,
+            data: {
+                time: {
+                    hours: hours,
+                    minutes: minutes
+                },
+                gym: {
+                    id: this.props.id
+                }
+            },
+            beforeSend(xhr) {
+                if(!button.isLoading()) {
+                    button.start();
+                }    
+            },
+            success: function(data) {
+                button.stop();
+                
+                if(data.error === true) {
+                    this.setState({ showError: true });
+                } else {
+                    this.setState({ userState: 'incomming' });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr, status, error);
+            }
+        });
+    }
+    
+    iWillComeRenderer() {
+        if(this.state.userState === 'registering_for_come') {
+            return <IWillComeForm hideTimeListAction={this.hideTimeList} saveTime={this.saveTime} />;
+        }
+        
+        if(this.state.userState === 'not_comming'){
+            return <IWillComeButton showTimeListAction={this.showTimeList} />;
+        }
+        
+        if(this.state.userState === 'incomming'){
+            return <IComming resignAction={this.resign} />;
+        }
+    }
+    
     render() {
         return (
             <div id="poke-team" className="container-fluid">
@@ -21,9 +103,10 @@ class Test extends React.Component
                     <div className="col-md-6">
                         <PokemonInfo pokemonName="Feralligator" raidLvl="3"/>
                         <PokeMasterCounter number="7" />
-                        <IWillComeButton />
+                        {this.iWillComeRenderer()}
                     </div>
                     <div className="col-md-6">
+                        <ListOfIncomingPokeMasters />
                     </div>
                 </div>
             </div>
@@ -32,6 +115,6 @@ class Test extends React.Component
 }
 
 ReactDOM.render(
-    <Test />,
+    <Test id="33" />,
     document.getElementById('root')
 )
