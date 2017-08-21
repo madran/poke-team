@@ -41,8 +41,36 @@ class Test extends React.Component
         this.setState({ userState: 'not_comming' });
     }
     
-    resign() {
-        this.setState({ userState: 'not_comming' });
+    resign(event) {
+        event.preventDefault();
+        
+        var button = Ladda.create(event.target);
+        $.ajax({
+            url: '/remove',
+            method: 'post',
+            context: this,
+            data: {
+                gym: {
+                    id: this.props.id
+                }
+            },
+            beforeSend: function() {
+                button.start();
+            },
+            success: function(data) {
+                button.stop();
+                
+                if(data.error === true) {
+                    this.setState({ showError: true });
+                } else {
+                    this.setState({ userState: 'not_comming' });
+                }
+            },
+            error: function(xhr, status, error) {
+                button.stop();
+                console.log(xhr, status, error);
+            }
+        });
     }
     
     saveTime(hours, minutes, event) {
@@ -61,7 +89,7 @@ class Test extends React.Component
                     id: this.props.id
                 }
             },
-            beforeSend(xhr) {
+            beforeSend: function() {
                 if(!button.isLoading()) {
                     button.start();
                 }    
@@ -76,6 +104,7 @@ class Test extends React.Component
                 }
             },
             error: function(xhr, status, error) {
+                button.stop();
                 console.log(xhr, status, error);
             }
         });
