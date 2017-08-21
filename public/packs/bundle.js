@@ -20104,6 +20104,18 @@ var Test = function (_React$Component) {
             this.setState({ userState: 'not_comming' });
         }
     }, {
+        key: 'removeMessage',
+        value: function removeMessage() {
+            var _this2 = this;
+
+            setTimeout(function () {
+                _this2.setState({
+                    serverResponseMessage: '',
+                    serverResponseType: ''
+                });
+            }, 5000);
+        }
+    }, {
         key: 'resign',
         value: function resign(event) {
             event.preventDefault();
@@ -20136,6 +20148,7 @@ var Test = function (_React$Component) {
                             userState: 'not_comming'
                         });
                     }
+                    this.removeMessage();
                 },
                 error: function error(xhr, status, _error) {
                     button.stop();
@@ -20181,6 +20194,7 @@ var Test = function (_React$Component) {
                             serverResponseType: 'success'
                         });
                     }
+                    this.removeMessage();
                 },
                 error: function error(xhr, status, _error2) {
                     button.stop();

@@ -44,6 +44,15 @@ class Test extends React.Component
         this.setState({ userState: 'not_comming' });
     }
     
+    removeMessage() {
+        setTimeout(() => {
+            this.setState({
+                serverResponseMessage: '',
+                serverResponseType: ''
+            });
+        }, 5000);
+    }
+    
     resign(event) {
         event.preventDefault();
         
@@ -79,6 +88,7 @@ class Test extends React.Component
                         }
                     );
                 }
+                this.removeMessage();
             },
             error: function(xhr, status, error) {
                 button.stop();
@@ -127,6 +137,7 @@ class Test extends React.Component
                         }
                     );
                 }
+                this.removeMessage();
             },
             error: function(xhr, status, error) {
                 button.stop();
