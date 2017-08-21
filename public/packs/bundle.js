@@ -20058,6 +20058,10 @@ var _ListOfIncomingPokeMasters = __webpack_require__(198);
 
 var _ListOfIncomingPokeMasters2 = _interopRequireDefault(_ListOfIncomingPokeMasters);
 
+var _Messages = __webpack_require__(208);
+
+var _Messages2 = _interopRequireDefault(_Messages);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20078,7 +20082,8 @@ var Test = function (_React$Component) {
 
         _this.state = {
             userState: userState,
-            showError: false
+            serverResponseMessage: '',
+            serverResponseType: ''
         };
 
         _this.showTimeList = _this.showTimeList.bind(_this);
@@ -20120,9 +20125,16 @@ var Test = function (_React$Component) {
                     button.stop();
 
                     if (data.error === true) {
-                        this.setState({ showError: true });
+                        this.setState({
+                            serverResponseMessage: data.errorMessage,
+                            serverResponseType: 'error'
+                        });
                     } else {
-                        this.setState({ userState: 'not_comming' });
+                        this.setState({
+                            serverResponseMessage: 'success',
+                            serverResponseType: 'success',
+                            userState: 'not_comming'
+                        });
                     }
                 },
                 error: function error(xhr, status, _error) {
@@ -20158,9 +20170,16 @@ var Test = function (_React$Component) {
                     button.stop();
 
                     if (data.error === true) {
-                        this.setState({ showError: true });
+                        this.setState({
+                            serverResponseMessage: data.errorMessage,
+                            serverResponseType: 'error'
+                        });
                     } else {
-                        this.setState({ userState: 'incomming' });
+                        this.setState({
+                            userState: 'incomming',
+                            serverResponseMessage: 'success',
+                            serverResponseType: 'success'
+                        });
                     }
                 },
                 error: function error(xhr, status, _error2) {
@@ -20189,7 +20208,8 @@ var Test = function (_React$Component) {
         value: function render() {
             return _react2.default.createElement(
                 'div',
-                { id: 'poke-team', className: 'container-fluid' },
+                { id: 'poke-team', className: 'container-fluid pt-3' },
+                _react2.default.createElement(_Messages2.default, { alertType: this.state.serverResponseType, alertMessage: this.state.serverResponseType }),
                 _react2.default.createElement(_Timer2.default, { timeToRaidEnd: '00:00:31' }),
                 _react2.default.createElement(
                     'div',
@@ -40109,6 +40129,80 @@ var ListOfIncomingPokeMasters = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = ListOfIncomingPokeMasters;
+
+/***/ }),
+/* 199 */,
+/* 200 */,
+/* 201 */,
+/* 202 */,
+/* 203 */,
+/* 204 */,
+/* 205 */,
+/* 206 */,
+/* 207 */,
+/* 208 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(13);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Message = function (_React$Component) {
+    _inherits(Message, _React$Component);
+
+    function Message(props) {
+        _classCallCheck(this, Message);
+
+        return _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
+    }
+
+    _createClass(Message, [{
+        key: 'render',
+        value: function render() {
+            var message = null;
+            if (this.props.alertType && this.props.alertMessage) {
+                message = _react2.default.createElement(
+                    'div',
+                    { className: 'col-md-12' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'alert alert-' + this.props.alertType, role: 'alert' },
+                        this.props.alertMessage
+                    )
+                );
+            } else {
+                message = null;
+            }
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'row' },
+                message
+            );
+        }
+    }]);
+
+    return Message;
+}(_react2.default.Component);
+
+exports.default = Message;
 
 /***/ })
 /******/ ]);

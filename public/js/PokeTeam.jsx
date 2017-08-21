@@ -14,6 +14,8 @@ import IWillComeButton from '../js/IWillComeButton.jsx';
 import IWillComeForm from '../js/IWillComeForm.jsx';
 import IComming from '../js/IComming.jsx';
 import ListOfIncomingPokeMasters from '../js/ListOfIncomingPokeMasters.jsx';
+import Message from '../js/Messages.jsx';
+
 
 class Test extends React.Component
 {
@@ -24,7 +26,8 @@ class Test extends React.Component
         
         this.state = {
             userState: userState,
-            showError: false
+            serverResponseMessage: '',
+            serverResponseType: ''
         };
         
         this.showTimeList = this.showTimeList.bind(this);
@@ -61,9 +64,20 @@ class Test extends React.Component
                 button.stop();
                 
                 if(data.error === true) {
-                    this.setState({ showError: true });
+                    this.setState(
+                        { 
+                            serverResponseMessage: data.errorMessage,
+                            serverResponseType: 'error'
+                        }
+                    );
                 } else {
-                    this.setState({ userState: 'not_comming' });
+                    this.setState(
+                        {
+                            serverResponseMessage: 'success',
+                            serverResponseType: 'success',
+                            userState: 'not_comming'
+                        }
+                    );
                 }
             },
             error: function(xhr, status, error) {
@@ -98,9 +112,20 @@ class Test extends React.Component
                 button.stop();
                 
                 if(data.error === true) {
-                    this.setState({ showError: true });
+                    this.setState(
+                        { 
+                            serverResponseMessage: data.errorMessage,
+                            serverResponseType: 'error'
+                        }
+                    );
                 } else {
-                    this.setState({ userState: 'incomming' });
+                    this.setState(
+                        {
+                            userState: 'incomming',
+                            serverResponseMessage: 'success',
+                            serverResponseType: 'success'
+                        }
+                    );
                 }
             },
             error: function(xhr, status, error) {
@@ -126,7 +151,8 @@ class Test extends React.Component
     
     render() {
         return (
-            <div id="poke-team" className="container-fluid">
+            <div id="poke-team" className="container-fluid pt-3">
+                <Message alertType={this.state.serverResponseType} alertMessage={this.state.serverResponseType} />
                 <Timer timeToRaidEnd="00:00:31" />
                 <div className="row">
                     <div className="col-md-6">
