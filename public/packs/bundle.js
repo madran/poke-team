@@ -20098,13 +20098,15 @@ var Test = function (_React$Component) {
         _this.state = {
             userState: _this.REGISTRAION_STATUS_NOT_REGISTERED,
             serverResponseMessage: '',
-            serverResponseType: ''
+            serverResponseType: '',
+            messages: []
         };
 
         _this.showRegisterForm = _this.showRegisterForm.bind(_this);
         _this.hideRegisterForm = _this.hideRegisterForm.bind(_this);
         _this.unregister = _this.unregister.bind(_this);
         _this.saveTime = _this.saveTime.bind(_this);
+        _this.showMessage = _this.showMessage.bind(_this);
         return _this;
     }
 
@@ -20224,15 +20226,33 @@ var Test = function (_React$Component) {
         value: function showMessage(messageType, message) {
             var _this3 = this;
 
-            this.setState({
-                serverResponseMessage: message,
-                serverResponseType: messageType
+            //        this.setState({ 
+            //                serverResponseMessage: message,
+            //                serverResponseType: messageType
+            //            }
+            //        );
+
+            //        this.state = {
+            //            messages: []
+            //        }
+
+            this.setState(function (prevState, props) {
+                var messages = [_react2.default.createElement(_Message2.default, { messageType: messageType, message: message })];
+
+                messages = messages.concat(prevState.messages);
+                console.log(messages);
+                return {
+                    messages: messages
+                };
             });
 
             setTimeout(function () {
-                _this3.setState({
-                    serverResponseMessage: '',
-                    serverResponseType: ''
+                _this3.setState(function (prevState, props) {
+                    var messages = prevState.messages.slice(0, -1);
+
+                    return {
+                        messages: messages
+                    };
                 });
             }, 5000);
         }
@@ -20242,7 +20262,7 @@ var Test = function (_React$Component) {
             return _react2.default.createElement(
                 'div',
                 { id: 'poke-team', className: 'container-fluid pt-3' },
-                _react2.default.createElement(_Message2.default, { alertType: this.state.serverResponseType, alertMessage: this.state.serverResponseType }),
+                this.state.messages,
                 _react2.default.createElement(_Timer2.default, { timeToRaidEnd: '00:00:31' }),
                 _react2.default.createElement(
                     'div',
@@ -40210,27 +40230,20 @@ var Message = function (_React$Component) {
     }
 
     _createClass(Message, [{
-        key: 'render',
+        key: "render",
         value: function render() {
-            var message = null;
-            if (this.props.alertType && this.props.alertMessage) {
-                message = _react2.default.createElement(
-                    'div',
-                    { className: 'col-md-12' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'alert alert-' + this.props.alertType, role: 'alert' },
-                        this.props.alertMessage
-                    )
-                );
-            } else {
-                message = null;
-            }
-
             return _react2.default.createElement(
-                'div',
-                { className: 'row' },
-                message
+                "div",
+                { className: "row" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "col-md-12" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: 'alert alert-' + this.props.messageType, role: "alert" },
+                        this.props.message
+                    )
+                )
             );
         }
     }]);

@@ -29,13 +29,15 @@ class Test extends React.Component
         this.state = {
             userState: this.REGISTRAION_STATUS_NOT_REGISTERED,
             serverResponseMessage: '',
-            serverResponseType: ''
+            serverResponseType: '',
+            messages: []
         };
         
         this.showRegisterForm = this.showRegisterForm.bind(this);
         this.hideRegisterForm = this.hideRegisterForm.bind(this);
         this.unregister = this.unregister.bind(this);
         this.saveTime = this.saveTime.bind(this);
+        this.showMessage = this.showMessage.bind(this);
     }
     
     showRegisterForm() {
@@ -142,16 +144,35 @@ class Test extends React.Component
     }
     
     showMessage(messageType, message) {
-        this.setState({ 
-                serverResponseMessage: message,
-                serverResponseType: messageType
-            }
-        );
+//        this.setState({ 
+//                serverResponseMessage: message,
+//                serverResponseType: messageType
+//            }
+//        );
+
+//        this.state = {
+//            messages: []
+//        }
+        
+        this.setState((prevState, props) => {
+            var messages = [(
+                <Message messageType={messageType} message={message} />
+            )];
+
+            messages = messages.concat(prevState.messages);
+            console.log(messages);
+            return {
+                messages: messages
+            };
+        });
 
         setTimeout(() => {
-            this.setState({
-                serverResponseMessage: '',
-                serverResponseType: ''
+            this.setState((prevState, props) => {
+                var messages = prevState.messages.slice(0, -1);
+
+                return {
+                    messages: messages
+                };
             });
         }, 5000);
     }
@@ -159,7 +180,7 @@ class Test extends React.Component
     render() {
         return (
             <div id="poke-team" className="container-fluid pt-3">
-                <Message alertType={this.state.serverResponseType} alertMessage={this.state.serverResponseType} />
+                {this.state.messages}
                 <Timer timeToRaidEnd="00:00:31" />
                 <div className="row">
                     <div className="col-md-6">
