@@ -20038,9 +20038,9 @@ var _PokemonInfo = __webpack_require__(193);
 
 var _PokemonInfo2 = _interopRequireDefault(_PokemonInfo);
 
-var _PokeMasterCounter = __webpack_require__(194);
+var _TrainerCounter = __webpack_require__(209);
 
-var _PokeMasterCounter2 = _interopRequireDefault(_PokeMasterCounter);
+var _TrainerCounter2 = _interopRequireDefault(_TrainerCounter);
 
 var _IWillComeButton = __webpack_require__(195);
 
@@ -20054,13 +20054,13 @@ var _IComming = __webpack_require__(197);
 
 var _IComming2 = _interopRequireDefault(_IComming);
 
-var _ListOfIncomingPokeMasters = __webpack_require__(198);
+var _IncomingTrainers = __webpack_require__(210);
 
-var _ListOfIncomingPokeMasters2 = _interopRequireDefault(_ListOfIncomingPokeMasters);
+var _IncomingTrainers2 = _interopRequireDefault(_IncomingTrainers);
 
-var _Messages = __webpack_require__(208);
+var _Message = __webpack_require__(211);
 
-var _Messages2 = _interopRequireDefault(_Messages);
+var _Message2 = _interopRequireDefault(_Message);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20073,35 +20073,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Test = function (_React$Component) {
     _inherits(Test, _React$Component);
 
+    _createClass(Test, [{
+        key: 'REGISTRAION_STATUS_REGISTERED',
+        get: function get() {
+            return 'registerd';
+        }
+    }, {
+        key: 'REGISTRAION_STATUS_NOT_REGISTERED',
+        get: function get() {
+            return 'not_registered';
+        }
+    }, {
+        key: 'REGISTRAION_STATUS_REGISTERING',
+        get: function get() {
+            return 'registering';
+        }
+    }]);
+
     function Test(props) {
         _classCallCheck(this, Test);
 
         var _this = _possibleConstructorReturn(this, (Test.__proto__ || Object.getPrototypeOf(Test)).call(this, props));
 
-        var userState = _this.props.isComming ? 'incomming' : 'not_comming';
-
         _this.state = {
-            userState: userState,
+            userState: _this.REGISTRAION_STATUS_NOT_REGISTERED,
             serverResponseMessage: '',
             serverResponseType: ''
         };
 
-        _this.showTimeList = _this.showTimeList.bind(_this);
-        _this.hideTimeList = _this.hideTimeList.bind(_this);
-        _this.resign = _this.resign.bind(_this);
+        _this.showRegisterForm = _this.showRegisterForm.bind(_this);
+        _this.hideRegisterForm = _this.hideRegisterForm.bind(_this);
+        _this.unregister = _this.unregister.bind(_this);
         _this.saveTime = _this.saveTime.bind(_this);
         return _this;
     }
 
     _createClass(Test, [{
-        key: 'showTimeList',
-        value: function showTimeList() {
-            this.setState({ userState: 'registering_for_come' });
+        key: 'showRegisterForm',
+        value: function showRegisterForm() {
+            this.setState({ userState: this.REGISTRAION_STATUS_REGISTERING });
         }
     }, {
-        key: 'hideTimeList',
-        value: function hideTimeList() {
-            this.setState({ userState: 'not_comming' });
+        key: 'hideRegisterForm',
+        value: function hideRegisterForm() {
+            this.setState({ userState: this.REGISTRAION_STATUS_NOT_REGISTERED });
         }
     }, {
         key: 'removeMessage',
@@ -20116,19 +20131,17 @@ var Test = function (_React$Component) {
             }, 5000);
         }
     }, {
-        key: 'resign',
-        value: function resign(event) {
+        key: 'unregister',
+        value: function unregister(event) {
             event.preventDefault();
 
             var button = _ladda2.default.create(event.target);
             $.ajax({
-                url: '/remove',
+                url: '/unregister',
                 method: 'post',
                 context: this,
                 data: {
-                    gym: {
-                        id: this.props.id
-                    }
+                    gymId: this.props.id
                 },
                 beforeSend: function beforeSend() {
                     button.start();
@@ -20137,16 +20150,13 @@ var Test = function (_React$Component) {
                     button.stop();
 
                     if (data.error === true) {
-                        this.setState({
-                            serverResponseMessage: data.errorMessage,
-                            serverResponseType: 'error'
-                        });
+                        this.showMessage('error', data.errorMessage);
                     } else {
                         this.setState({
-                            serverResponseMessage: 'success',
-                            serverResponseType: 'success',
-                            userState: 'not_comming'
+                            userState: this.REGISTRAION_STATUS_NOT_REGISTERED
                         });
+
+                        this.showMessage('success', 'success');
                     }
                     this.removeMessage();
                 },
@@ -20162,17 +20172,13 @@ var Test = function (_React$Component) {
             var button = _ladda2.default.create(event.target);
 
             $.ajax({
-                url: '/save',
+                url: '/register',
                 method: 'post',
                 context: this,
                 data: {
-                    time: {
-                        hours: hours,
-                        minutes: minutes
-                    },
-                    gym: {
-                        id: this.props.id
-                    }
+                    hoursToRaidEnd: hours,
+                    minutesToRaidEnd: minutes,
+                    gymId: this.props.id
                 },
                 beforeSend: function beforeSend() {
                     if (!button.isLoading()) {
@@ -20183,18 +20189,14 @@ var Test = function (_React$Component) {
                     button.stop();
 
                     if (data.error === true) {
-                        this.setState({
-                            serverResponseMessage: data.errorMessage,
-                            serverResponseType: 'error'
-                        });
+                        this.showMessage('error', data.errorMessage);
                     } else {
                         this.setState({
-                            userState: 'incomming',
-                            serverResponseMessage: 'success',
-                            serverResponseType: 'success'
+                            userState: this.REGISTRAION_STATUS_REGISTERED
                         });
+
+                        this.showMessage('success', 'success');
                     }
-                    this.removeMessage();
                 },
                 error: function error(xhr, status, _error2) {
                     button.stop();
@@ -20205,17 +20207,34 @@ var Test = function (_React$Component) {
     }, {
         key: 'iWillComeRenderer',
         value: function iWillComeRenderer() {
-            if (this.state.userState === 'registering_for_come') {
-                return _react2.default.createElement(_IWillComeForm2.default, { hideTimeListAction: this.hideTimeList, saveTime: this.saveTime });
+            if (this.state.userState === this.REGISTRAION_STATUS_REGISTERING) {
+                return _react2.default.createElement(_IWillComeForm2.default, { hideRegisterFormAction: this.hideRegisterForm, saveTime: this.saveTime });
             }
 
-            if (this.state.userState === 'not_comming') {
-                return _react2.default.createElement(_IWillComeButton2.default, { showTimeListAction: this.showTimeList });
+            if (this.state.userState === this.REGISTRAION_STATUS_NOT_REGISTERED) {
+                return _react2.default.createElement(_IWillComeButton2.default, { showRegisterFormAction: this.showRegisterForm });
             }
 
-            if (this.state.userState === 'incomming') {
-                return _react2.default.createElement(_IComming2.default, { resignAction: this.resign });
+            if (this.state.userState === this.REGISTRAION_STATUS_REGISTERED) {
+                return _react2.default.createElement(_IComming2.default, { unregisterAction: this.unregister });
             }
+        }
+    }, {
+        key: 'showMessage',
+        value: function showMessage(messageType, message) {
+            var _this3 = this;
+
+            this.setState({
+                serverResponseMessage: message,
+                serverResponseType: messageType
+            });
+
+            setTimeout(function () {
+                _this3.setState({
+                    serverResponseMessage: '',
+                    serverResponseType: ''
+                });
+            }, 5000);
         }
     }, {
         key: 'render',
@@ -20223,7 +20242,7 @@ var Test = function (_React$Component) {
             return _react2.default.createElement(
                 'div',
                 { id: 'poke-team', className: 'container-fluid pt-3' },
-                _react2.default.createElement(_Messages2.default, { alertType: this.state.serverResponseType, alertMessage: this.state.serverResponseType }),
+                _react2.default.createElement(_Message2.default, { alertType: this.state.serverResponseType, alertMessage: this.state.serverResponseType }),
                 _react2.default.createElement(_Timer2.default, { timeToRaidEnd: '00:00:31' }),
                 _react2.default.createElement(
                     'div',
@@ -20232,13 +20251,13 @@ var Test = function (_React$Component) {
                         'div',
                         { className: 'col-md-6' },
                         _react2.default.createElement(_PokemonInfo2.default, { pokemonName: 'Feralligator', raidLvl: '3' }),
-                        _react2.default.createElement(_PokeMasterCounter2.default, { number: '7' }),
+                        _react2.default.createElement(_TrainerCounter2.default, { number: '7' }),
                         this.iWillComeRenderer()
                     ),
                     _react2.default.createElement(
                         'div',
                         { className: 'col-md-6' },
-                        _react2.default.createElement(_ListOfIncomingPokeMasters2.default, null)
+                        _react2.default.createElement(_IncomingTrainers2.default, null)
                     )
                 )
             );
@@ -39755,62 +39774,7 @@ var PokemonInfo = function (_React$Component) {
 exports.default = PokemonInfo;
 
 /***/ }),
-/* 194 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(13);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var PokeMasterCounter = function (_React$Component) {
-    _inherits(PokeMasterCounter, _React$Component);
-
-    function PokeMasterCounter(props) {
-        _classCallCheck(this, PokeMasterCounter);
-
-        return _possibleConstructorReturn(this, (PokeMasterCounter.__proto__ || Object.getPrototypeOf(PokeMasterCounter)).call(this, props));
-    }
-
-    _createClass(PokeMasterCounter, [{
-        key: "render",
-        value: function render() {
-            return _react2.default.createElement(
-                "div",
-                { className: "row mt-3" },
-                _react2.default.createElement(
-                    "div",
-                    { id: "poke-master-counter-text", className: "col-md-12 text-center" },
-                    _react2.default.createElement("span", { className: "oi oi-person", title: "person", "aria-hidden": "true" }),
-                    " x ",
-                    this.props.number
-                )
-            );
-        }
-    }]);
-
-    return PokeMasterCounter;
-}(_react2.default.Component);
-
-exports.default = PokeMasterCounter;
-
-/***/ }),
+/* 194 */,
 /* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -39855,7 +39819,7 @@ var IWillComeButton = function (_React$Component) {
                     { className: "col-md-12 text-center" },
                     _react2.default.createElement(
                         "button",
-                        { type: "button", className: "btn btn-success i-will-come-button", onClick: this.props.showTimeListAction },
+                        { type: "button", className: "btn btn-success i-will-come-button", onClick: this.props.showRegisterFormAction },
                         "I will come"
                     )
                 )
@@ -39994,7 +39958,7 @@ var IWillComeForm = function (_React$Component) {
                             { className: 'form-group col-md-6 i-will-come-buttons' },
                             _react2.default.createElement(
                                 'button',
-                                { type: 'button', className: 'btn btn-danger btn-lg i-will-come-button', onClick: this.props.hideTimeListAction },
+                                { type: 'button', className: 'btn btn-danger btn-lg i-will-come-button', onClick: this.props.hideRegisterFormAction },
                                 'Back'
                             )
                         ),
@@ -40065,7 +40029,7 @@ var IComming = function (_React$Component) {
                     { className: "col-md-6" },
                     _react2.default.createElement(
                         "button",
-                        { type: "button", className: "btn btn-danger btn-lg i-will-come-button", onClick: this.props.resignAction },
+                        { type: "button", className: "btn btn-danger btn-lg i-will-come-button", onClick: this.props.unregisterAction },
                         "Resign"
                     )
                 ),
@@ -40080,7 +40044,18 @@ var IComming = function (_React$Component) {
 exports.default = IComming;
 
 /***/ }),
-/* 198 */
+/* 198 */,
+/* 199 */,
+/* 200 */,
+/* 201 */,
+/* 202 */,
+/* 203 */,
+/* 204 */,
+/* 205 */,
+/* 206 */,
+/* 207 */,
+/* 208 */,
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40104,16 +40079,72 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ListOfIncomingPokeMasters = function (_React$Component) {
-    _inherits(ListOfIncomingPokeMasters, _React$Component);
+var TrainerCounter = function (_React$Component) {
+    _inherits(TrainerCounter, _React$Component);
 
-    function ListOfIncomingPokeMasters(props) {
-        _classCallCheck(this, ListOfIncomingPokeMasters);
+    function TrainerCounter(props) {
+        _classCallCheck(this, TrainerCounter);
 
-        return _possibleConstructorReturn(this, (ListOfIncomingPokeMasters.__proto__ || Object.getPrototypeOf(ListOfIncomingPokeMasters)).call(this, props));
+        return _possibleConstructorReturn(this, (TrainerCounter.__proto__ || Object.getPrototypeOf(TrainerCounter)).call(this, props));
     }
 
-    _createClass(ListOfIncomingPokeMasters, [{
+    _createClass(TrainerCounter, [{
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                { className: "row mt-3" },
+                _react2.default.createElement(
+                    "div",
+                    { id: "poke-master-counter-text", className: "col-md-12 text-center" },
+                    _react2.default.createElement("span", { className: "oi oi-person", title: "person", "aria-hidden": "true" }),
+                    " x ",
+                    this.props.number
+                )
+            );
+        }
+    }]);
+
+    return TrainerCounter;
+}(_react2.default.Component);
+
+exports.default = TrainerCounter;
+
+/***/ }),
+/* 210 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(13);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var IncomingTrainers = function (_React$Component) {
+    _inherits(IncomingTrainers, _React$Component);
+
+    function IncomingTrainers(props) {
+        _classCallCheck(this, IncomingTrainers);
+
+        return _possibleConstructorReturn(this, (IncomingTrainers.__proto__ || Object.getPrototypeOf(IncomingTrainers)).call(this, props));
+    }
+
+    _createClass(IncomingTrainers, [{
         key: "render",
         value: function render() {
 
@@ -40139,22 +40170,13 @@ var ListOfIncomingPokeMasters = function (_React$Component) {
         }
     }]);
 
-    return ListOfIncomingPokeMasters;
+    return IncomingTrainers;
 }(_react2.default.Component);
 
-exports.default = ListOfIncomingPokeMasters;
+exports.default = IncomingTrainers;
 
 /***/ }),
-/* 199 */,
-/* 200 */,
-/* 201 */,
-/* 202 */,
-/* 203 */,
-/* 204 */,
-/* 205 */,
-/* 206 */,
-/* 207 */,
-/* 208 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

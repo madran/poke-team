@@ -9,39 +9,41 @@ import Ladda from 'ladda';
 
 import Timer from '../js/Timer.jsx';
 import PokemonInfo from '../js/PokemonInfo.jsx';
-import PokeMasterCounter from '../js/PokeMasterCounter.jsx';
+import TrainerCounter from '../js/TrainerCounter.jsx';
 import IWillComeButton from '../js/IWillComeButton.jsx';
 import IWillComeForm from '../js/IWillComeForm.jsx';
 import IComming from '../js/IComming.jsx';
-import ListOfIncomingPokeMasters from '../js/ListOfIncomingPokeMasters.jsx';
-import Message from '../js/Messages.jsx';
+import IncomingTrainers from '../js/IncomingTrainers.jsx';
+import Message from '../js/Message.jsx';
 
 
 class Test extends React.Component
 {
+    get REGISTRAION_STATUS_REGISTERED() { return 'registerd'; };
+    get REGISTRAION_STATUS_NOT_REGISTERED() { return 'not_registered'; };
+    get REGISTRAION_STATUS_REGISTERING() { return 'registering'; };
+    
     constructor(props) {
         super(props);
         
-        var userState = this.props.isComming ? 'incomming' : 'not_comming';
-        
         this.state = {
-            userState: userState,
+            userState: this.REGISTRAION_STATUS_NOT_REGISTERED,
             serverResponseMessage: '',
             serverResponseType: ''
         };
         
-        this.showTimeList = this.showTimeList.bind(this);
-        this.hideTimeList = this.hideTimeList.bind(this);
-        this.resign = this.resign.bind(this);
+        this.showRegisterForm = this.showRegisterForm.bind(this);
+        this.hideRegisterForm = this.hideRegisterForm.bind(this);
+        this.unregister = this.unregister.bind(this);
         this.saveTime = this.saveTime.bind(this);
     }
     
-    showTimeList() {
-        this.setState({ userState: 'registering_for_come' });
+    showRegisterForm() {
+        this.setState({ userState: this.REGISTRAION_STATUS_REGISTERING });
     }
     
-    hideTimeList() {
-        this.setState({ userState: 'not_comming' });
+    hideRegisterForm() {
+        this.setState({ userState: this.REGISTRAION_STATUS_NOT_REGISTERED });
     }
     
     removeMessage() {
@@ -53,18 +55,16 @@ class Test extends React.Component
         }, 5000);
     }
     
-    resign(event) {
+    unregister(event) {
         event.preventDefault();
         
         var button = Ladda.create(event.target);
         $.ajax({
-            url: '/remove',
+            url: '/unregister',
             method: 'post',
             context: this,
             data: {
-                gym: {
-                    id: this.props.id
-                }
+                gymId: this.props.id
             },
             beforeSend: function() {
                 button.start();
@@ -73,20 +73,13 @@ class Test extends React.Component
                 button.stop();
                 
                 if(data.error === true) {
-                    this.setState(
-                        { 
-                            serverResponseMessage: data.errorMessage,
-                            serverResponseType: 'error'
-                        }
-                    );
+                    this.showMessage('error', data.errorMessage);
                 } else {
-                    this.setState(
-                        {
-                            serverResponseMessage: 'success',
-                            serverResponseType: 'success',
-                            userState: 'not_comming'
-                        }
-                    );
+                    this.setState({
+                        userState: this.REGISTRAION_STATUS_NOT_REGISTERED
+                    });
+                    
+                    this.showMessage('success', 'success');
                 }
                 this.removeMessage();
             },
@@ -101,17 +94,13 @@ class Test extends React.Component
         var button = Ladda.create(event.target);
         
         $.ajax({
-            url: '/save',
+            url: '/register',
             method: 'post',
             context: this,
             data: {
-                time: {
-                    hours: hours,
-                    minutes: minutes
-                },
-                gym: {
-                    id: this.props.id
-                }
+                hoursToRaidEnd: hours,
+                minutesToRaidEnd: minutes,
+                gymId: this.props.id
             },
             beforeSend: function() {
                 if(!button.isLoading()) {
@@ -122,22 +111,14 @@ class Test extends React.Component
                 button.stop();
                 
                 if(data.error === true) {
-                    this.setState(
-                        { 
-                            serverResponseMessage: data.errorMessage,
-                            serverResponseType: 'error'
-                        }
-                    );
+                    this.showMessage('error', data.errorMessage);
                 } else {
-                    this.setState(
-                        {
-                            userState: 'incomming',
-                            serverResponseMessage: 'success',
-                            serverResponseType: 'success'
-                        }
-                    );
+                    this.setState({
+                        userState: this.REGISTRAION_STATUS_REGISTERED,
+                    });
+                    
+                    this.showMessage('success', 'success');
                 }
-                this.removeMessage();
             },
             error: function(xhr, status, error) {
                 button.stop();
@@ -147,17 +128,32 @@ class Test extends React.Component
     }
     
     iWillComeRenderer() {
-        if(this.state.userState === 'registering_for_come') {
-            return <IWillComeForm hideTimeListAction={this.hideTimeList} saveTime={this.saveTime} />;
+        if(this.state.userState === this.REGISTRAION_STATUS_REGISTERING) {
+            return <IWillComeForm hideRegisterFormAction={this.hideRegisterForm} saveTime={this.saveTime} />;
         }
         
-        if(this.state.userState === 'not_comming'){
-            return <IWillComeButton showTimeListAction={this.showTimeList} />;
+        if(this.state.userState === this.REGISTRAION_STATUS_NOT_REGISTERED){
+            return <IWillComeButton showRegisterFormAction={this.showRegisterForm} />;
         }
         
-        if(this.state.userState === 'incomming'){
-            return <IComming resignAction={this.resign} />;
+        if(this.state.userState === this.REGISTRAION_STATUS_REGISTERED){
+            return <IComming unregisterAction={this.unregister} />;
         }
+    }
+    
+    showMessage(messageType, message) {
+        this.setState({ 
+                serverResponseMessage: message,
+                serverResponseType: messageType
+            }
+        );
+
+        setTimeout(() => {
+            this.setState({
+                serverResponseMessage: '',
+                serverResponseType: ''
+            });
+        }, 5000);
     }
     
     render() {
@@ -168,11 +164,11 @@ class Test extends React.Component
                 <div className="row">
                     <div className="col-md-6">
                         <PokemonInfo pokemonName="Feralligator" raidLvl="3"/>
-                        <PokeMasterCounter number="7" />
+                        <TrainerCounter number="7" />
                         {this.iWillComeRenderer()}
                     </div>
                     <div className="col-md-6">
-                        <ListOfIncomingPokeMasters />
+                        <IncomingTrainers />
                     </div>
                 </div>
             </div>

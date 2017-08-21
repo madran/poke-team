@@ -18,8 +18,7 @@ class IndexController extends Zend_Controller_Action
     
     public function loadGymsDataAction()
     {
-        $this->_helper->layout->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(TRUE);
+        $this->disableLayout();
         
         if ($this->getRequest()->isXmlHttpRequest()) {
             if ($this->getRequest()->isPost()) {
@@ -36,76 +35,88 @@ class IndexController extends Zend_Controller_Action
         }
     }
 
-    public function saveAction()
+    public function registerAction()
     {
-        $this->_helper->layout->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(TRUE);
+        $this->disableLayout();
         
-        if ($this->getRequest()->isXmlHttpRequest()) {
-            if ($this->getRequest()->isPost()) {
-                $gymData = $this->getRequest()->getParam('gym');
-                $raidEndTime = $this->getRequest()->getParam('time');
-                
-                $time = new \DateTime();
-                $time->modify('+' . $raidEndTime['hours'] . 'hours');
-                $time->modify('+' . $raidEndTime['minutes'] . 'minutes');
-                
-                $user = $this->em->find('Db_Model_User', $this->userId);
-                
-                if ($this->em->getRepository('Db_Model_Gym')->findOneBy(['userId' => $this->userId, 'gymId' => $gymData['id']])) {
-                    echo json_encode(['message' => 'You are registered in this gym']);
-                }
-                
-                $gym = new \Db_Model_Gym();
-                $gym->setGymId($gymData['id']);
-                $gym->setUserId($user);
-                $gym->setRaidEndTime($time);
-                
-                $this->em->persist($gym);
-                
-                try {
-                    $this->em->flush();
-                } catch(ORMException $e) {
-                    echo json_encode(['error' => true, 'errorMessage' => $e->getMessage()]);
-                    exit;
-                }
-                
-                echo json_encode(['error' => false]);
-                exit;
+        if ($this->isAjaxPostRequest()) {
+            $gymId = $this->getRequest()->getParam('gymId');
+            $hoursToRaidEnd = $this->getRequest()->getParam('hoursToRaidEnd');
+            $minutesToRaidEnd = $this->getRequest()->getParam('minutesToRaidEnd');
+
+            $time = $this->getTimeToRaidEnd($hoursToRaidEnd, $minutesToRaidEnd);
+
+            $user = $this->em->find('Db_Model_User', $this->userId);
+
+            if ($this->isTrainerRegisteredInGym($gymId)) {
+                $this->_helper->json(['message' => 'You are registered in this gym']);
             }
+
+            $gym = new \Db_Model_Gym();
+            $gym->setGymId($gymId);
+            $gym->setUserId($user);
+            $gym->setRaidEndTime($time);
+            
+            $this->em->persist($gym);
+
+            try {
+                $this->em->flush();
+            } catch(ORMException $e) {
+                $this->_helper->json(['error' => true, 'errorMessage' => $e->getMessage()]);
+            }
+
+            $this->_helper->json(['error' => false]);
         } else {
-            echo ['error' => true];
-            exit;
+            $this->_helper->json(['error' => true]);
         }
     }
     
-    public function removeAction()
+    public function unregisterAction()
+    {
+        $this->disableLayout();
+        
+        if ($this->isAjaxPostRequest()) {
+            $gymId = $this->getParam('gymId');
+
+            $gym = $this->em->getRepository('Db_Model_Gym')->findOneBy(['userId' => $this->userId, 'gymId' => $gymId]);
+
+            $this->em->remove($gym);
+
+            try {
+                $this->em->flush();
+            } catch (ORMException $e) {
+                $this->_helper->json(['error' => true, 'errorMessage' => $e->getMessage()]);
+            }
+
+            $this->_helper->json(['error' => false]);
+        } else {
+            $this->_helper->json(['error' => true]);
+        }
+    }
+    
+    private function disableLayout()
     {
         $this->_helper->layout->disableLayout();
         $this->_helper->viewRenderer->setNoRender(TRUE);
+    }
+    
+    private function isAjaxPostRequest()
+    {
+        return $this->getRequest()->isXmlHttpRequest() && $this->getRequest()->isPost();
+    }
+    
+    private function getTimeToRaidEnd($hours, $minutes)
+    {
+        $time = new \DateTime();
+        $time->modify('+' . $hours . 'hours');
+        $time->modify('+' . $minutes . 'minutes');
         
-        if ($this->getRequest()->isXmlHttpRequest()) {
-            if ($this->getRequest()->isPost()) {
-                $gymData = $this->getParam('gym');
-                
-                $gym = $this->em->getRepository('Db_Model_Gym')->findOneBy(['userId' => $this->userId, 'gymId' => $gymData['id']]);
-                
-                $this->em->remove($gym);
-                
-                try {
-                    $this->em->flush();
-                } catch (ORMException $e) {
-                    echo json_encode(['error' => true, 'errorMessage' => $e->getMessage()]);
-                    exit;
-                }
-                
-                echo json_encode(['error' => false]);
-                exit;
-            }
-        } else {
-            echo ['error' => true];
-            exit;
-        }
+        return $time;
+    }
+    
+    private function isTrainerRegisteredInGym($gymId)
+    {
+        return boolval($this->em->getRepository('Db_Model_Gym')->findOneBy(['userId' => $this->userId, 'gymId' => $gymId]));
     }
 }
 

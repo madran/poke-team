@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default class ListOfIncomingPokeMasters extends React.Component
+export default class IncomingTrainers extends React.Component
 {
     constructor(props) {
         super(props);
