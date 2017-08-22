@@ -9,12 +9,13 @@ var extractText = new ExtractTextPlugin({
 var provide = new webpack.ProvidePlugin({
    $: 'jquery',
    jQuery: 'jquery',
-   Popper: 'popper.js'
+   Popper: 'popper.js',
+   Ladda: 'ladda'
 });
 
 module.exports = {
     context: path.resolve(__dirname, 'public'),
-    entry: './js/PokeTeam.jsx',
+    entry: './js/app.jsx',
     output: {
         path: path.resolve(__dirname, 'public/packs'),
         filename: 'bundle.js'

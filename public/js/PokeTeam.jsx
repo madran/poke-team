@@ -1,11 +1,5 @@
-import '../css/main.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-import 'bootstrap';
-
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Ladda from 'ladda';
+import ShortId from 'shortid';
 
 import Timer from '../js/Timer.jsx';
 import PokemonInfo from '../js/PokemonInfo.jsx';
@@ -16,8 +10,7 @@ import IComming from '../js/IComming.jsx';
 import IncomingTrainers from '../js/IncomingTrainers.jsx';
 import Message from '../js/Message.jsx';
 
-
-class Test extends React.Component
+export default class PokeTeam extends React.Component
 {
     get REGISTRAION_STATUS_REGISTERED() { return 'registerd'; };
     get REGISTRAION_STATUS_NOT_REGISTERED() { return 'not_registered'; };
@@ -48,15 +41,6 @@ class Test extends React.Component
         this.setState({ userState: this.REGISTRAION_STATUS_NOT_REGISTERED });
     }
     
-    removeMessage() {
-        setTimeout(() => {
-            this.setState({
-                serverResponseMessage: '',
-                serverResponseType: ''
-            });
-        }, 5000);
-    }
-    
     unregister(event) {
         event.preventDefault();
         
@@ -83,7 +67,6 @@ class Test extends React.Component
                     
                     this.showMessage('success', 'success');
                 }
-                this.removeMessage();
             },
             error: function(xhr, status, error) {
                 button.stop();
@@ -144,23 +127,13 @@ class Test extends React.Component
     }
     
     showMessage(messageType, message) {
-//        this.setState({ 
-//                serverResponseMessage: message,
-//                serverResponseType: messageType
-//            }
-//        );
-
-//        this.state = {
-//            messages: []
-//        }
-        
         this.setState((prevState, props) => {
             var messages = [(
-                <Message messageType={messageType} message={message} />
+                <Message key={ShortId.generate()} messageType={messageType} message={message} />
             )];
 
             messages = messages.concat(prevState.messages);
-            console.log(messages);
+            
             return {
                 messages: messages
             };
@@ -196,8 +169,3 @@ class Test extends React.Component
         );
     }
 }
-
-ReactDOM.render(
-    <Test id="33" />,
-    document.getElementById('root')
-)

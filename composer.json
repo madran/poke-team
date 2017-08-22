@@ -1,6 +1,0 @@
-{
-    "require": {
-        "zendframework/zendframework1": "^1.12",
-        "doctrine/orm": "^2.5"
-    }
-}
