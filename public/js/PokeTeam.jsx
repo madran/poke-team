@@ -151,13 +151,15 @@ export default class PokeTeam extends React.Component
     }
     
     render() {
+        if(this.props.gym === null) return null;
+        
         return (
             <div id="poke-team" className="container-fluid pt-3">
                 {this.state.messages}
-                <Timer timeToRaidEnd="00:00:31" />
+                <Timer timeToRaidEnd={this.props.gym.timeToRaidEnd} />
                 <div className="row">
                     <div className="col-md-6">
-                        <PokemonInfo pokemonName="Feralligator" raidLvl="3"/>
+                        <PokemonInfo pokemonName={this.props.gym.pokemonName} raidLvl={this.props.gym.raidLvl} />
                         <TrainerCounter number="7" />
                         {this.iWillComeRenderer()}
                     </div>

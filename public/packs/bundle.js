@@ -20024,6 +20024,8 @@ module.exports = getHostComponentFromComposite;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 __webpack_require__(85);
 
 __webpack_require__(86);
@@ -20042,9 +20044,73 @@ var _PokeTeam = __webpack_require__(192);
 
 var _PokeTeam2 = _interopRequireDefault(_PokeTeam);
 
+var _GymMap = __webpack_require__(222);
+
+var _GymMap2 = _interopRequireDefault(_GymMap);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_reactDom2.default.render(_react2.default.createElement(_PokeTeam2.default, { id: '33' }), document.getElementById('root'));
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var App = function (_React$Component) {
+    _inherits(App, _React$Component);
+
+    function App(props) {
+        _classCallCheck(this, App);
+
+        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+        _this.state = {
+            currentGym: null
+        };
+
+        _this.showGym = _this.showGym.bind(_this);
+        return _this;
+    }
+
+    _createClass(App, [{
+        key: 'showGym',
+        value: function showGym(gym) {
+            this.setState({
+                currentGym: gym
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { id: 'app', className: '' },
+                _react2.default.createElement(_GymMap2.default, { showGymAction: this.showGym }),
+                _react2.default.createElement(
+                    'div',
+                    { id: 'gymModal', className: 'modal fade', role: 'dialog' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'modal-dialog', role: 'document' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'modal-content' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'modal-body' },
+                                _react2.default.createElement(_PokeTeam2.default, { gym: this.state.currentGym })
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return App;
+}(_react2.default.Component);
+
+_reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('root'));
 
 /***/ }),
 /* 85 */
@@ -39584,18 +39650,20 @@ var PokeTeam = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
+            if (this.props.gym === null) return null;
+
             return _react2.default.createElement(
                 'div',
                 { id: 'poke-team', className: 'container-fluid pt-3' },
                 this.state.messages,
-                _react2.default.createElement(_Timer2.default, { timeToRaidEnd: '00:00:31' }),
+                _react2.default.createElement(_Timer2.default, { timeToRaidEnd: this.props.gym.timeToRaidEnd }),
                 _react2.default.createElement(
                     'div',
                     { className: 'row' },
                     _react2.default.createElement(
                         'div',
                         { className: 'col-md-6' },
-                        _react2.default.createElement(_PokemonInfo2.default, { pokemonName: 'Feralligator', raidLvl: '3' }),
+                        _react2.default.createElement(_PokemonInfo2.default, { pokemonName: this.props.gym.pokemonName, raidLvl: this.props.gym.raidLvl }),
                         _react2.default.createElement(_TrainerCounter2.default, { number: '7' }),
                         this.iWillComeRenderer()
                     ),
@@ -39648,15 +39716,20 @@ var Timer = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
 
-        var timeToRaidEnd = _this.props.timeToRaidEnd.split(":");
-        timeToRaidEnd = (+timeToRaidEnd[0] * 60 * 60 + +timeToRaidEnd[1] * 60 + +timeToRaidEnd[2]) * 1000;
+        var raidEndTime = _this.props.timeToRaidEnd.split(":");
+        raidEndTime = raidEndTime.map(function (value, index) {
+            return parseInt(value);
+        });
 
-        var currentDate = new Date();
-        var raidEndTime = currentDate.getTime() + timeToRaidEnd;
+        var date = new Date();
+        date.setHours(date.getHours() + raidEndTime[0]);
+        date.setMinutes(date.getMinutes() + raidEndTime[1]);
+        date.setSeconds(date.getSeconds() + raidEndTime[2]);
 
         _this.state = {
-            raidEndTime: raidEndTime,
-            timeToRaidEnd: timeToRaidEnd
+            raidEndTime: date,
+            timeToRaidEnd: '',
+            initialTime: _this.props.timeToRaidEnd
         };
 
         _this.timer = _this.timer.bind(_this);
@@ -39664,41 +39737,62 @@ var Timer = function (_React$Component) {
     }
 
     _createClass(Timer, [{
-        key: "componentDidMount",
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(nextProps) {
+            var raidEndTime = nextProps.timeToRaidEnd.split(":");
+            raidEndTime = raidEndTime.map(function (value, index) {
+                return parseInt(value);
+            });
+
+            var date = new Date();
+            date.setHours(date.getHours() + raidEndTime[0]);
+            date.setMinutes(date.getMinutes() + raidEndTime[1]);
+            date.setSeconds(date.getSeconds() + raidEndTime[2]);
+
+            this.setState({
+                raidEndTime: date,
+                timeToRaidEnd: this.state.timeToRaidEnd
+            });
+        }
+
+        //    shouldComponentUpdate(nextProps, nextState) {
+        //        console.log(nextProps.timeToRaidEnd === this.state.initialTime);
+        //        if(nextProps.timeToRaidEnd !== this.state.initialTime) {
+        //        }
+        //        return true;
+        //    }
+
+    }, {
+        key: 'componentDidMount',
         value: function componentDidMount() {
             this.timerId = setInterval(this.timer, 1000);
         }
     }, {
-        key: "timer",
+        key: 'timer',
         value: function timer() {
-            var _this2 = this;
+            var currentDate = new Date();
+            var timeToRaidEnd = this.state.raidEndTime.getTime() - currentDate.getTime();
 
-            this.setState(function (prevState, props) {
-                var currentDate = new Date();
-                var timeToRaidEnd = prevState.raidEndTime - currentDate.getTime();
-
-                if (timeToRaidEnd > 0) {
-                    return { timeToRaidEnd: timeToRaidEnd };
-                } else {
-                    window.clearInterval(_this2.timerId);
-                }
-            });
+            var newTimeToRaidEnd = new Date(timeToRaidEnd);
+            if (timeToRaidEnd > 0) {
+                this.setState({
+                    timeToRaidEnd: String('00' + newTimeToRaidEnd.getUTCHours()).slice(-2) + ':' + String('00' + newTimeToRaidEnd.getMinutes()).slice(-2) + ':' + String('00' + newTimeToRaidEnd.getSeconds()).slice(-2)
+                });
+            } else {
+                window.clearInterval(this.timerId);
+            }
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             var date = new Date(this.state.timeToRaidEnd);
             return _react2.default.createElement(
-                "div",
-                { id: "poke-team-timer", className: "row" },
+                'div',
+                { id: 'poke-team-timer', className: 'row' },
                 _react2.default.createElement(
-                    "div",
-                    { className: "col-12 text-center" },
-                    date.getUTCHours(),
-                    ":",
-                    date.getMinutes(),
-                    ":",
-                    date.getSeconds()
+                    'div',
+                    { className: 'col-12 text-center' },
+                    this.state.timeToRaidEnd
                 )
             );
         }
@@ -39755,7 +39849,7 @@ var PokemonInfo = function (_React$Component) {
             var stars = '';
 
             for (var i = 1; i <= this.maxRaidLvl; i++) {
-                if (i < number) {
+                if (i <= number) {
                     stars = stars + String.fromCharCode(this.blackStarCode);
                 } else {
                     stars = stars + String.fromCharCode(this.whiteStarCode);
@@ -40629,6 +40723,262 @@ module.exports = isShortId;
 
 module.exports = 0;
 
+
+/***/ }),
+/* 220 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(10);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Gym = function (_React$Component) {
+    _inherits(Gym, _React$Component);
+
+    function Gym(props) {
+        _classCallCheck(this, Gym);
+
+        return _possibleConstructorReturn(this, (Gym.__proto__ || Object.getPrototypeOf(Gym)).call(this, props));
+    }
+
+    _createClass(Gym, [{
+        key: "render",
+        value: function render() {
+            return _react2.default.createElement(
+                "div",
+                { className: "container" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "row" },
+                    _react2.default.createElement("button", { type: "button", className: "btn btn-primary" })
+                )
+            );
+        }
+    }]);
+
+    return Gym;
+}(_react2.default.Component);
+
+exports.default = Gym;
+
+/***/ }),
+/* 221 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(10);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+//import PokeTeam from '../js/PokeTeam.jsx';
+
+var GymWithRaid = function (_React$Component) {
+    _inherits(GymWithRaid, _React$Component);
+
+    function GymWithRaid(props) {
+        _classCallCheck(this, GymWithRaid);
+
+        var _this = _possibleConstructorReturn(this, (GymWithRaid.__proto__ || Object.getPrototypeOf(GymWithRaid)).call(this, props));
+
+        var raidEndTime = _this.props.gym.raidEndTime.split(":");
+        raidEndTime = raidEndTime.map(function (value, index) {
+            return parseInt(value);
+        });
+
+        var date = new Date();
+        date.setHours(date.getHours() + raidEndTime[0]);
+        date.setMinutes(date.getMinutes() + raidEndTime[1]);
+        date.setSeconds(date.getSeconds() + raidEndTime[2]);
+
+        _this.state = {
+            raidEndTime: date,
+            timeToRaidEnd: '00:00:00'
+        };
+
+        _this.timer = _this.timer.bind(_this);
+        _this.showGym = _this.showGym.bind(_this);
+        return _this;
+    }
+
+    _createClass(GymWithRaid, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            this.timerId = setInterval(this.timer, 1000);
+        }
+    }, {
+        key: 'timer',
+        value: function timer() {
+            var currentDate = new Date();
+            var timeToRaidEnd = this.state.raidEndTime.getTime() - currentDate.getTime();
+
+            var newTimeToRaidEnd = new Date(timeToRaidEnd);
+            if (timeToRaidEnd > 0) {
+                this.setState({
+                    timeToRaidEnd: String('00' + newTimeToRaidEnd.getUTCHours()).slice(-2) + ':' + String('00' + newTimeToRaidEnd.getMinutes()).slice(-2) + ':' + String('00' + newTimeToRaidEnd.getSeconds()).slice(-2)
+                });
+            } else {
+                window.clearInterval(this.timerId);
+            }
+        }
+    }, {
+        key: 'showGym',
+        value: function showGym() {
+            var gym = this.props.gym;
+            gym.timeToRaidEnd = this.state.timeToRaidEnd;
+            this.props.showGymAction(this.props.gym);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var date = new Date(this.state.timeToRaidEnd);
+            return _react2.default.createElement(
+                'div',
+                { className: 'container' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'row' },
+                    _react2.default.createElement(
+                        'button',
+                        { type: 'button', 'data-target': '#gymModal', 'data-toggle': 'modal', className: 'btn btn-primary', onClick: this.showGym },
+                        this.state.timeToRaidEnd
+                    )
+                )
+            );
+        }
+    }]);
+
+    return GymWithRaid;
+}(_react2.default.Component);
+
+exports.default = GymWithRaid;
+
+/***/ }),
+/* 222 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(10);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Gym = __webpack_require__(220);
+
+var _Gym2 = _interopRequireDefault(_Gym);
+
+var _GymWithRaid = __webpack_require__(221);
+
+var _GymWithRaid2 = _interopRequireDefault(_GymWithRaid);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var GymMap = function (_React$Component) {
+    _inherits(GymMap, _React$Component);
+
+    function GymMap(props) {
+        _classCallCheck(this, GymMap);
+
+        var _this = _possibleConstructorReturn(this, (GymMap.__proto__ || Object.getPrototypeOf(GymMap)).call(this, props));
+
+        _this.state = {
+            gyms: []
+        };
+
+        _this.loadGymData = _this.loadGymData.bind(_this);
+
+        _this.loadGymData();
+        setInterval(_this.loadGymData, 5000);
+        return _this;
+    }
+
+    _createClass(GymMap, [{
+        key: 'loadGymData',
+        value: function loadGymData() {
+            $.ajax({
+                url: 'gyms',
+                method: 'post',
+                context: this,
+                success: function success(data) {
+                    if (data.error === true) {} else {
+                        this.setState({
+                            gyms: data
+                        });
+                    }
+                }
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            var gyms = this.state.gyms.map(function (gym, index) {
+                if (gym.pokemonName.length > 0) {
+                    return _react2.default.createElement(_GymWithRaid2.default, { key: gym.id, gym: gym, showGymAction: _this2.props.showGymAction });
+                } else {
+                    return _react2.default.createElement(_Gym2.default, { key: gym.id });
+                }
+            });
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'container' },
+                gyms
+            );
+        }
+    }]);
+
+    return GymMap;
+}(_react2.default.Component);
+
+exports.default = GymMap;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33)))
 
 /***/ })
 /******/ ]);

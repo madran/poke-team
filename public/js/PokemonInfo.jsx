@@ -7,7 +7,7 @@ export default class PokemonInfo extends React.Component
         
         this.maxRaidLvl = 5;
         this.blackStarCode = 9733;
-        this.whiteStarCode = 9734
+        this.whiteStarCode = 9734;
     }
     
     getStars(raidLvl) {
@@ -15,7 +15,7 @@ export default class PokemonInfo extends React.Component
         var stars = '';
         
         for(var i = 1; i <= this.maxRaidLvl; i++) {
-            if(i < number) {
+            if(i <= number) {
                 stars = stars + String.fromCharCode(this.blackStarCode);
             } else {
                 stars = stars + String.fromCharCode(this.whiteStarCode);

@@ -1,11 +1,13 @@
 import React from 'react';
 
-export default class Timer extends React.Component
+//import PokeTeam from '../js/PokeTeam.jsx';
+
+export default class GymWithRaid extends React.Component
 {
     constructor(props) {
         super(props);
-
-        var raidEndTime = this.props.timeToRaidEnd.split(":");
+        
+        var raidEndTime = this.props.gym.raidEndTime.split(":");
         raidEndTime = raidEndTime.map((value, index) => {
             return parseInt(value);
         });
@@ -17,41 +19,17 @@ export default class Timer extends React.Component
         
         this.state = {
             raidEndTime: date,
-            timeToRaidEnd: '',
-            initialTime: this.props.timeToRaidEnd
+            timeToRaidEnd: '00:00:00'
         };
         
         this.timer = this.timer.bind(this);
+        this.showGym = this.showGym.bind(this);
     }
-    
-    componentWillReceiveProps(nextProps) {
-        var raidEndTime = nextProps.timeToRaidEnd.split(":");
-        raidEndTime = raidEndTime.map((value, index) => {
-            return parseInt(value);
-        });
-
-        var date = new Date();
-        date.setHours(date.getHours() + raidEndTime[0]);
-        date.setMinutes(date.getMinutes() + raidEndTime[1]);
-        date.setSeconds(date.getSeconds() + raidEndTime[2]);
-        
-        this.setState({
-            raidEndTime: date,
-            timeToRaidEnd: this.state.timeToRaidEnd
-        });
-    }
-    
-//    shouldComponentUpdate(nextProps, nextState) {
-//        console.log(nextProps.timeToRaidEnd === this.state.initialTime);
-//        if(nextProps.timeToRaidEnd !== this.state.initialTime) {
-//        }
-//        return true;
-//    }
     
     componentDidMount() {
         this.timerId = setInterval(this.timer, 1000);
     }
-
+    
     timer() {
         var currentDate = new Date();
         var timeToRaidEnd = this.state.raidEndTime.getTime() - currentDate.getTime();
@@ -67,13 +45,21 @@ export default class Timer extends React.Component
             window.clearInterval(this.timerId)
         }
     }
-        
+    
+    showGym() {
+        var gym = this.props.gym;
+        gym.timeToRaidEnd = this.state.timeToRaidEnd;
+        this.props.showGymAction(this.props.gym); 
+    }
+    
     render() {
         var date = new Date(this.state.timeToRaidEnd);
-        return (
-            <div id="poke-team-timer" className="row">
-                <div className="col-12 text-center">
-                    {this.state.timeToRaidEnd}
+        return(
+            <div className="container">
+                <div className="row">
+                    <button type="button" data-target="#gymModal" data-toggle="modal" className="btn btn-primary" onClick={this.showGym}>
+                        {this.state.timeToRaidEnd}
+                    </button>
                 </div>
             </div>
         );
