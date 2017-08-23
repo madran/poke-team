@@ -39528,25 +39528,29 @@ var PokeTeam = function (_React$Component) {
     }
 
     _createClass(PokeTeam, [{
-        key: 'componentWillReceiveProps',
-        value: function componentWillReceiveProps(nextProps) {
-            return this.loadGymData(nextProps);
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate(prevProps, prevState) {
+            var prevId = prevProps.gym === null ? 0 : prevProps.gym.id;
+
+            if (prevId != this.props.gym.id) {
+                this.loadGymData();
+            }
         }
     }, {
         key: 'loadGymData',
-        value: function loadGymData(nextProps) {
+        value: function loadGymData() {
             $.ajax({
                 url: '/gym',
                 method: 'post',
                 context: this,
                 data: {
-                    gymId: nextProps.gym.id
+                    gymId: this.props.gym.id
                 },
                 success: function success(data) {
                     if (data.error === true) {} else {
                         this.setState({
-                            waitingTrainers: data.trainers['waiting'],
-                            incomingTrainers: data.trainers['incoming']
+                            waitingTrainers: data.trainers.waiting,
+                            incomingTrainers: data.trainers.incoming
                         });
 
                         if (this.state.userState !== this.REGISTRAION_STATUS_REGISTERING) {
@@ -40281,6 +40285,44 @@ var IncomingTrainers = function (_React$Component) {
     _createClass(IncomingTrainers, [{
         key: "render",
         value: function render() {
+            var trainerList = this.props.incoming;
+            var currentDate = new Date();
+            var trainersListGroups = [];
+            var shouldBeHere = 0;
+
+            if (trainerList.length > 0) {
+                for (var i = 0; i < trainerList.length; i++) {
+                    var incomeTime = new Date(trainerList[i].incomeTime.date);
+
+                    var timeToIncome = incomeTime - currentDate;
+
+                    var minutesToIncome = Math.floor(timeToIncome / 1000 / 60);
+                    var roudedMinutesToIncome = Math.ceil(minutesToIncome / 5) * 5;
+
+                    if (roudedMinutesToIncome <= 0) {
+                        shouldBeHere = shouldBeHere + 1;
+                    } else {
+                        trainersListGroups[roudedMinutesToIncome] = (trainersListGroups[roudedMinutesToIncome] || 0) + 1;
+                    }
+                };
+
+                //            for(var i = 0; i < minutes.length; i++) {
+                //                var minutes = Math.ceil(minutes[i].incomeTime / 5) * 5;
+                //                trainersListGroups[minutes] = (trainersListGroups[minutes] || 0) + 1;
+                //            }
+                //            
+                trainersListGroups = trainersListGroups.map(function (numberOfTrainers, index) {
+                    return _react2.default.createElement(
+                        "li",
+                        { className: "list-group-item incoming-trainers", key: index },
+                        index,
+                        "min : ",
+                        _react2.default.createElement("span", { className: "oi oi-person", title: "person", "aria-hidden": "true" }),
+                        " X ",
+                        numberOfTrainers
+                    );
+                });
+            }
 
             //        var items = this.props.pokeMasters.map((pokeMaster, index) => {
             //            var TimeOfArrival = this.props.timeToRaidEnd.split(":");
@@ -40293,12 +40335,36 @@ var IncomingTrainers = function (_React$Component) {
                 _react2.default.createElement(
                     "div",
                     { className: "col-md-12 text-center" },
-                    "Incoming"
+                    _react2.default.createElement(
+                        "h5",
+                        null,
+                        "Incoming:"
+                    )
                 ),
                 _react2.default.createElement(
                     "div",
                     { className: "col-md-12" },
-                    _react2.default.createElement("ul", null)
+                    _react2.default.createElement(
+                        "ul",
+                        { className: "list-group text-center borderless" },
+                        trainersListGroups
+                    )
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "col-md-12 text-center mt-3" },
+                    _react2.default.createElement(
+                        "h5",
+                        null,
+                        "Should be here:"
+                    )
+                ),
+                _react2.default.createElement(
+                    "div",
+                    { className: "col-md-12 text-center incoming-trainers" },
+                    _react2.default.createElement("span", { className: "oi oi-person", title: "person", "aria-hidden": "true" }),
+                    " X ",
+                    shouldBeHere
                 )
             );
         }

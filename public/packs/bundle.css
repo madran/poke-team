@@ -1416,6 +1416,14 @@ template {
 .i-will-come-button {
     height: 100px;
     width: 100%;
+}
+
+ul.borderless li {
+  border: 0 none;
+}
+
+.incoming-trainers {
+    font-size: 17px;
 }/*!
  * Bootstrap v4.0.0-beta (https://getbootstrap.com)
  * Copyright 2011-2017 The Bootstrap Authors

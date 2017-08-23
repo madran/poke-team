@@ -36,25 +36,29 @@ export default class PokeTeam extends React.Component
         this.loadGymData= this.loadGymData.bind(this);
     }
     
-    componentWillReceiveProps(nextProps) {
-        return this.loadGymData(nextProps);
+    componentDidUpdate(prevProps, prevState) {
+        var prevId = prevProps.gym === null ? 0 : prevProps.gym.id;
+        
+        if(prevId != this.props.gym.id) {
+            this.loadGymData();
+        }
     }
     
-    loadGymData(nextProps) {
+    loadGymData() {
         $.ajax({
             url: '/gym',
             method: 'post',
             context: this,
             data: {
-                gymId: nextProps.gym.id
+                gymId: this.props.gym.id
             },
             success: function(data) {
                 if(data.error === true) {
                     
                 } else {
                     this.setState({
-                        waitingTrainers: data.trainers['waiting'],
-                        incomingTrainers: data.trainers['incoming']
+                        waitingTrainers: data.trainers.waiting,
+                        incomingTrainers: data.trainers.incoming
                     });
                     
                     if(this.state.userState !== this.REGISTRAION_STATUS_REGISTERING) {

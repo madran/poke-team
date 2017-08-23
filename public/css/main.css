@@ -14,3 +14,11 @@
     height: 100px;
     width: 100%;
 }
+
+ul.borderless li {
+  border: 0 none;
+}
+
+.incoming-trainers {
+    font-size: 17px;
+}
