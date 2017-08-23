@@ -16,6 +16,41 @@ class IndexController extends Zend_Controller_Action
         
     }
     
+    public function gymAction()
+    {
+        $this->disableLayout();
+        
+        if ($this->isAjaxPostRequest()) {
+            $gymId = $this->getRequest()->getParam('gymId');
+            
+            $query = $this->em->createQuery("select g.gymId, identity(g.userId) as userId, g.isTrainerAtGym, g.incomeTime  from Db_Model_Gym g where g.gymId = :gymId");
+            $query->setParameter('gymId', $gymId);
+            $trainers = $query->getArrayResult();
+//            $trainers = $this->em->getRepository('Db_Model_Gym')->findBy(['gymId' => $gymId]);
+
+            $trainersWaiting = array_filter($trainers, function($trainer) {
+                return $trainer['isTrainerAtGym'] === true;
+            });
+            
+            $trainersIncoming = array_filter($trainers, function($trainer) {
+                return $trainer['isTrainerAtGym'] === false;
+            });
+            
+            $me = array_filter($trainers, function($trainer) {
+                return intVal($trainer['userId']) === $this->userId;
+            });
+            
+            $this->_helper->json([
+                'trainers' => 
+                    [
+                        'waiting' => count($trainersWaiting),
+                        'incoming' => $trainersIncoming
+                    ],
+                'registered' => count($me)
+            ]);
+        }
+    }
+    
     public function gymsAction()
     {
         $this->disableLayout();
@@ -42,10 +77,10 @@ class IndexController extends Zend_Controller_Action
         
         if ($this->isAjaxPostRequest()) {
             $gymId = $this->getRequest()->getParam('gymId');
-            $hoursToRaidEnd = $this->getRequest()->getParam('hoursToRaidEnd');
-            $minutesToRaidEnd = $this->getRequest()->getParam('minutesToRaidEnd');
+            $hours = $this->getRequest()->getParam('hours');
+            $minutes = $this->getRequest()->getParam('minutes');
 
-            $time = $this->getTimeToRaidEnd($hoursToRaidEnd, $minutesToRaidEnd);
+            $time = $this->trainerIncomeTime($hours, $minutes);
 
             $user = $this->em->find('Db_Model_User', $this->userId);
 
@@ -56,7 +91,7 @@ class IndexController extends Zend_Controller_Action
             $gym = new \Db_Model_Gym();
             $gym->setGymId($gymId);
             $gym->setUserId($user);
-            $gym->setRaidEndTime($time);
+            $gym->setIncomeTime($time);
             
             $this->em->persist($gym);
 
@@ -106,11 +141,10 @@ class IndexController extends Zend_Controller_Action
         return $this->getRequest()->isXmlHttpRequest() && $this->getRequest()->isPost();
     }
     
-    private function getTimeToRaidEnd($hours, $minutes)
+    private function trainerIncomeTime($hours, $minutes)
     {
         $time = new \DateTime();
-        $time->modify('+' . $hours . 'hours');
-        $time->modify('+' . $minutes . 'minutes');
+        $time->setTime($hours, $minutes);
         
         return $time;
     }

@@ -13,7 +13,11 @@ export default class IWillComeForm extends React.Component
         var hours = $form.find('#hoursToCome').val();
         var minutes = $form.find('#minutesToCome').val();
         
-        this.props.saveTime(hours, minutes, event);
+        var date = new Date();
+        date.setHours(date.getHours() + parseInt(hours));
+        date.setMinutes(date.getMinutes() + parseInt(minutes));
+
+        this.props.registerAction(date.getHours(), date.getMinutes(), event);
     }
     
     render() {

@@ -23,14 +23,51 @@ export default class PokeTeam extends React.Component
             userState: this.REGISTRAION_STATUS_NOT_REGISTERED,
             serverResponseMessage: '',
             serverResponseType: '',
-            messages: []
+            messages: [],
+            waitingTrainers: '',
+            incomingTrainers: []
         };
         
         this.showRegisterForm = this.showRegisterForm.bind(this);
         this.hideRegisterForm = this.hideRegisterForm.bind(this);
         this.unregister = this.unregister.bind(this);
-        this.saveTime = this.saveTime.bind(this);
+        this.register = this.register.bind(this);
         this.showMessage = this.showMessage.bind(this);
+        this.loadGymData= this.loadGymData.bind(this);
+    }
+    
+    componentWillReceiveProps(nextProps) {
+        return this.loadGymData(nextProps);
+    }
+    
+    loadGymData(nextProps) {
+        $.ajax({
+            url: '/gym',
+            method: 'post',
+            context: this,
+            data: {
+                gymId: nextProps.gym.id
+            },
+            success: function(data) {
+                if(data.error === true) {
+                    
+                } else {
+                    this.setState({
+                        waitingTrainers: data.trainers['waiting'],
+                        incomingTrainers: data.trainers['incoming']
+                    });
+                    
+                    if(this.state.userState !== this.REGISTRAION_STATUS_REGISTERING) {
+                        this.setState({
+                            userState: data.registered ? this.REGISTRAION_STATUS_REGISTERED : this.REGISTRAION_STATUS_NOT_REGISTERED
+                        });
+                    }
+                }
+            },
+            error: function() {
+                
+            }
+        });
     }
     
     showRegisterForm() {
@@ -50,7 +87,7 @@ export default class PokeTeam extends React.Component
             method: 'post',
             context: this,
             data: {
-                gymId: this.props.id
+                gymId: this.props.gym.id
             },
             beforeSend: function() {
                 button.start();
@@ -75,7 +112,7 @@ export default class PokeTeam extends React.Component
         });
     }
     
-    saveTime(hours, minutes, event) {
+    register(hours, minutes, event) {
         var button = Ladda.create(event.target);
         
         $.ajax({
@@ -83,9 +120,9 @@ export default class PokeTeam extends React.Component
             method: 'post',
             context: this,
             data: {
-                hoursToRaidEnd: hours,
-                minutesToRaidEnd: minutes,
-                gymId: this.props.id
+                hours: hours,
+                minutes: minutes,
+                gymId: this.props.gym.id
             },
             beforeSend: function() {
                 if(!button.isLoading()) {
@@ -114,7 +151,7 @@ export default class PokeTeam extends React.Component
     
     iWillComeRenderer() {
         if(this.state.userState === this.REGISTRAION_STATUS_REGISTERING) {
-            return <IWillComeForm hideRegisterFormAction={this.hideRegisterForm} saveTime={this.saveTime} />;
+            return <IWillComeForm hideRegisterFormAction={this.hideRegisterForm} registerAction={this.register} />;
         }
         
         if(this.state.userState === this.REGISTRAION_STATUS_NOT_REGISTERED){
@@ -154,17 +191,17 @@ export default class PokeTeam extends React.Component
         if(this.props.gym === null) return null;
         
         return (
-            <div id="poke-team" className="container-fluid pt-3">
+            <div id="poke-team" className="container-fluid">
                 {this.state.messages}
                 <Timer timeToRaidEnd={this.props.gym.timeToRaidEnd} />
                 <div className="row">
                     <div className="col-md-6">
                         <PokemonInfo pokemonName={this.props.gym.pokemonName} raidLvl={this.props.gym.raidLvl} />
-                        <TrainerCounter number="7" />
+                        <TrainerCounter number={this.state.waitingTrainers} />
                         {this.iWillComeRenderer()}
                     </div>
                     <div className="col-md-6">
-                        <IncomingTrainers />
+                        <IncomingTrainers incoming={this.state.incomingTrainers}/>
                     </div>
                 </div>
             </div>

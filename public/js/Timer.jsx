@@ -41,13 +41,6 @@ export default class Timer extends React.Component
         });
     }
     
-//    shouldComponentUpdate(nextProps, nextState) {
-//        console.log(nextProps.timeToRaidEnd === this.state.initialTime);
-//        if(nextProps.timeToRaidEnd !== this.state.initialTime) {
-//        }
-//        return true;
-//    }
-    
     componentDidMount() {
         this.timerId = setInterval(this.timer, 1000);
     }
@@ -56,12 +49,15 @@ export default class Timer extends React.Component
         var currentDate = new Date();
         var timeToRaidEnd = this.state.raidEndTime.getTime() - currentDate.getTime();
         
-        var newTimeToRaidEnd = new Date(timeToRaidEnd);
+        var hours = Math.floor(timeToRaidEnd / 1000 / 60 / 60);
+        var minutes = Math.floor((timeToRaidEnd / 1000 / 60) - hours * 60);
+        var seconds = Math.floor((timeToRaidEnd / 1000) - minutes * 60);
+        
         if(timeToRaidEnd > 0) {
             this.setState({
-                timeToRaidEnd: String('00' + newTimeToRaidEnd.getUTCHours()).slice(-2) + ':' + 
-                               String('00' + newTimeToRaidEnd.getMinutes()).slice(-2) + ':' + 
-                               String('00' + newTimeToRaidEnd.getSeconds()).slice(-2)
+                timeToRaidEnd: String('00' + hours).slice(-2) + ':' + 
+                               String('00' + minutes).slice(-2) + ':' + 
+                               String('00' + seconds).slice(-2)
             });
         } else {
             window.clearInterval(this.timerId)

@@ -25,9 +25,14 @@ class Db_Model_Gym {
     private $userId;
     
     /**
+     * @Column(type="boolean")
+     */
+    private $isTrainerAtGym = false;
+    
+    /**
      * @Column(type="datetime")
      */
-    private $raidEndTime;
+    private $incomeTime;
     
     function getId() {
         return $this->id;
@@ -41,8 +46,12 @@ class Db_Model_Gym {
         return $this->userId;
     }
 
-    function getRaidEndTime() {
-        return $this->raidEndTime;
+    function getIsTrainerAtGym() {
+        return $this->isTrainerAtGym;
+    }
+    
+    function getIncomeTime() {
+        return $this->incomeTime;
     }
 
     function setId($id) {
@@ -57,7 +66,11 @@ class Db_Model_Gym {
         $this->userId = $userId;
     }
 
-    function setRaidEndTime($raidEndTime) {
-        $this->raidEndTime = $raidEndTime;
+    function setIsTrainerAtGym($isTrainerAtGym) {
+        $this->isTrainerAtGym = $isTrainerAtGym;
+    }
+    
+    function setIncomeTime($incomeTime) {
+        $this->incomeTime = $incomeTime;
     }
 }

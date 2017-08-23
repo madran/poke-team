@@ -32,14 +32,17 @@ export default class GymWithRaid extends React.Component
     
     timer() {
         var currentDate = new Date();
-        var timeToRaidEnd = this.state.raidEndTime.getTime() - currentDate.getTime();
+        var timeToRaidEnd = this.state.raidEndTime - currentDate;
         
-        var newTimeToRaidEnd = new Date(timeToRaidEnd);
+        var hours = Math.floor(timeToRaidEnd / 1000 / 60 / 60);
+        var minutes = Math.floor((timeToRaidEnd / 1000 / 60) - hours * 60);
+        var seconds = Math.floor((timeToRaidEnd / 1000) - minutes * 60);
+        
         if(timeToRaidEnd > 0) {
             this.setState({
-                timeToRaidEnd: String('00' + newTimeToRaidEnd.getUTCHours()).slice(-2) + ':' + 
-                               String('00' + newTimeToRaidEnd.getMinutes()).slice(-2) + ':' + 
-                               String('00' + newTimeToRaidEnd.getSeconds()).slice(-2)
+                timeToRaidEnd: String('00' + hours).slice(-2) + ':' + 
+                               String('00' + minutes).slice(-2) + ':' + 
+                               String('00' + seconds).slice(-2)
             });
         } else {
             window.clearInterval(this.timerId)

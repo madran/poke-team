@@ -39428,7 +39428,7 @@ module.exports = ReactDOMInvalidARIAHook;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(Ladda, $) {
+/* WEBPACK VAR INJECTION */(function($, Ladda) {
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -39513,18 +39513,53 @@ var PokeTeam = function (_React$Component) {
             userState: _this.REGISTRAION_STATUS_NOT_REGISTERED,
             serverResponseMessage: '',
             serverResponseType: '',
-            messages: []
+            messages: [],
+            waitingTrainers: '',
+            incomingTrainers: []
         };
 
         _this.showRegisterForm = _this.showRegisterForm.bind(_this);
         _this.hideRegisterForm = _this.hideRegisterForm.bind(_this);
         _this.unregister = _this.unregister.bind(_this);
-        _this.saveTime = _this.saveTime.bind(_this);
+        _this.register = _this.register.bind(_this);
         _this.showMessage = _this.showMessage.bind(_this);
+        _this.loadGymData = _this.loadGymData.bind(_this);
         return _this;
     }
 
     _createClass(PokeTeam, [{
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(nextProps) {
+            return this.loadGymData(nextProps);
+        }
+    }, {
+        key: 'loadGymData',
+        value: function loadGymData(nextProps) {
+            $.ajax({
+                url: '/gym',
+                method: 'post',
+                context: this,
+                data: {
+                    gymId: nextProps.gym.id
+                },
+                success: function success(data) {
+                    if (data.error === true) {} else {
+                        this.setState({
+                            waitingTrainers: data.trainers['waiting'],
+                            incomingTrainers: data.trainers['incoming']
+                        });
+
+                        if (this.state.userState !== this.REGISTRAION_STATUS_REGISTERING) {
+                            this.setState({
+                                userState: data.registered ? this.REGISTRAION_STATUS_REGISTERED : this.REGISTRAION_STATUS_NOT_REGISTERED
+                            });
+                        }
+                    }
+                },
+                error: function error() {}
+            });
+        }
+    }, {
         key: 'showRegisterForm',
         value: function showRegisterForm() {
             this.setState({ userState: this.REGISTRAION_STATUS_REGISTERING });
@@ -39545,7 +39580,7 @@ var PokeTeam = function (_React$Component) {
                 method: 'post',
                 context: this,
                 data: {
-                    gymId: this.props.id
+                    gymId: this.props.gym.id
                 },
                 beforeSend: function beforeSend() {
                     button.start();
@@ -39570,8 +39605,8 @@ var PokeTeam = function (_React$Component) {
             });
         }
     }, {
-        key: 'saveTime',
-        value: function saveTime(hours, minutes, event) {
+        key: 'register',
+        value: function register(hours, minutes, event) {
             var button = Ladda.create(event.target);
 
             $.ajax({
@@ -39579,9 +39614,9 @@ var PokeTeam = function (_React$Component) {
                 method: 'post',
                 context: this,
                 data: {
-                    hoursToRaidEnd: hours,
-                    minutesToRaidEnd: minutes,
-                    gymId: this.props.id
+                    hours: hours,
+                    minutes: minutes,
+                    gymId: this.props.gym.id
                 },
                 beforeSend: function beforeSend() {
                     if (!button.isLoading()) {
@@ -39611,7 +39646,7 @@ var PokeTeam = function (_React$Component) {
         key: 'iWillComeRenderer',
         value: function iWillComeRenderer() {
             if (this.state.userState === this.REGISTRAION_STATUS_REGISTERING) {
-                return _react2.default.createElement(_IWillComeForm2.default, { hideRegisterFormAction: this.hideRegisterForm, saveTime: this.saveTime });
+                return _react2.default.createElement(_IWillComeForm2.default, { hideRegisterFormAction: this.hideRegisterForm, registerAction: this.register });
             }
 
             if (this.state.userState === this.REGISTRAION_STATUS_NOT_REGISTERED) {
@@ -39654,7 +39689,7 @@ var PokeTeam = function (_React$Component) {
 
             return _react2.default.createElement(
                 'div',
-                { id: 'poke-team', className: 'container-fluid pt-3' },
+                { id: 'poke-team', className: 'container-fluid' },
                 this.state.messages,
                 _react2.default.createElement(_Timer2.default, { timeToRaidEnd: this.props.gym.timeToRaidEnd }),
                 _react2.default.createElement(
@@ -39664,13 +39699,13 @@ var PokeTeam = function (_React$Component) {
                         'div',
                         { className: 'col-md-6' },
                         _react2.default.createElement(_PokemonInfo2.default, { pokemonName: this.props.gym.pokemonName, raidLvl: this.props.gym.raidLvl }),
-                        _react2.default.createElement(_TrainerCounter2.default, { number: '7' }),
+                        _react2.default.createElement(_TrainerCounter2.default, { number: this.state.waitingTrainers }),
                         this.iWillComeRenderer()
                     ),
                     _react2.default.createElement(
                         'div',
                         { className: 'col-md-6' },
-                        _react2.default.createElement(_IncomingTrainers2.default, null)
+                        _react2.default.createElement(_IncomingTrainers2.default, { incoming: this.state.incomingTrainers })
                     )
                 )
             );
@@ -39681,7 +39716,7 @@ var PokeTeam = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = PokeTeam;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(83), __webpack_require__(33)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33), __webpack_require__(83)))
 
 /***/ }),
 /* 193 */
@@ -39754,14 +39789,6 @@ var Timer = function (_React$Component) {
                 timeToRaidEnd: this.state.timeToRaidEnd
             });
         }
-
-        //    shouldComponentUpdate(nextProps, nextState) {
-        //        console.log(nextProps.timeToRaidEnd === this.state.initialTime);
-        //        if(nextProps.timeToRaidEnd !== this.state.initialTime) {
-        //        }
-        //        return true;
-        //    }
-
     }, {
         key: 'componentDidMount',
         value: function componentDidMount() {
@@ -39773,10 +39800,13 @@ var Timer = function (_React$Component) {
             var currentDate = new Date();
             var timeToRaidEnd = this.state.raidEndTime.getTime() - currentDate.getTime();
 
-            var newTimeToRaidEnd = new Date(timeToRaidEnd);
+            var hours = Math.floor(timeToRaidEnd / 1000 / 60 / 60);
+            var minutes = Math.floor(timeToRaidEnd / 1000 / 60 - hours * 60);
+            var seconds = Math.floor(timeToRaidEnd / 1000 - minutes * 60);
+
             if (timeToRaidEnd > 0) {
                 this.setState({
-                    timeToRaidEnd: String('00' + newTimeToRaidEnd.getUTCHours()).slice(-2) + ':' + String('00' + newTimeToRaidEnd.getMinutes()).slice(-2) + ':' + String('00' + newTimeToRaidEnd.getSeconds()).slice(-2)
+                    timeToRaidEnd: String('00' + hours).slice(-2) + ':' + String('00' + minutes).slice(-2) + ':' + String('00' + seconds).slice(-2)
                 });
             } else {
                 window.clearInterval(this.timerId);
@@ -40045,7 +40075,11 @@ var IWillComeForm = function (_React$Component) {
             var hours = $form.find('#hoursToCome').val();
             var minutes = $form.find('#minutesToCome').val();
 
-            this.props.saveTime(hours, minutes, event);
+            var date = new Date();
+            date.setHours(date.getHours() + parseInt(hours));
+            date.setMinutes(date.getMinutes() + parseInt(minutes));
+
+            this.props.registerAction(date.getHours(), date.getMinutes(), event);
         }
     }, {
         key: 'render',
@@ -40192,17 +40226,15 @@ var IComming = function (_React$Component) {
             return _react2.default.createElement(
                 "div",
                 { className: "row mt-3" },
-                _react2.default.createElement("div", { className: "col-md-3" }),
                 _react2.default.createElement(
                     "div",
-                    { className: "col-md-6" },
+                    { className: "col-md-12" },
                     _react2.default.createElement(
                         "button",
                         { type: "button", className: "btn btn-danger btn-lg i-will-come-button", onClick: this.props.unregisterAction },
                         "Resign"
                     )
-                ),
-                _react2.default.createElement("div", { className: "col-md-3" })
+                )
             );
         }
     }]);
@@ -40842,12 +40874,15 @@ var GymWithRaid = function (_React$Component) {
         key: 'timer',
         value: function timer() {
             var currentDate = new Date();
-            var timeToRaidEnd = this.state.raidEndTime.getTime() - currentDate.getTime();
+            var timeToRaidEnd = this.state.raidEndTime - currentDate;
 
-            var newTimeToRaidEnd = new Date(timeToRaidEnd);
+            var hours = Math.floor(timeToRaidEnd / 1000 / 60 / 60);
+            var minutes = Math.floor(timeToRaidEnd / 1000 / 60 - hours * 60);
+            var seconds = Math.floor(timeToRaidEnd / 1000 - minutes * 60);
+
             if (timeToRaidEnd > 0) {
                 this.setState({
-                    timeToRaidEnd: String('00' + newTimeToRaidEnd.getUTCHours()).slice(-2) + ':' + String('00' + newTimeToRaidEnd.getMinutes()).slice(-2) + ':' + String('00' + newTimeToRaidEnd.getSeconds()).slice(-2)
+                    timeToRaidEnd: String('00' + hours).slice(-2) + ':' + String('00' + minutes).slice(-2) + ':' + String('00' + seconds).slice(-2)
                 });
             } else {
                 window.clearInterval(this.timerId);
