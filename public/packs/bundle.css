@@ -1424,7 +1424,19 @@ ul.borderless li {
 
 .incoming-trainers {
     font-size: 17px;
-}/*!
+}
+
+#confirmResignModal .modal-dialog {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+#confirmResignModal .modal-content {
+    height: 100%;
+    width: 100%;
+}
+/*!
  * Bootstrap v4.0.0-beta (https://getbootstrap.com)
  * Copyright 2011-2017 The Bootstrap Authors
  * Copyright 2011-2017 Twitter, Inc.

@@ -39574,6 +39574,11 @@ var PokeTeam = function (_React$Component) {
             this.setState({ userState: this.REGISTRAION_STATUS_NOT_REGISTERED });
         }
     }, {
+        key: 'notUnregister',
+        value: function notUnregister() {
+            $('#confirmResignModal').modal('toggle');
+        }
+    }, {
         key: 'unregister',
         value: function unregister(event) {
             event.preventDefault();
@@ -39598,6 +39603,8 @@ var PokeTeam = function (_React$Component) {
                         this.setState({
                             userState: this.REGISTRAION_STATUS_NOT_REGISTERED
                         });
+
+                        $('#confirmResignModal').modal('toggle');
 
                         this.showMessage('success', 'success');
                     }
@@ -39658,7 +39665,7 @@ var PokeTeam = function (_React$Component) {
             }
 
             if (this.state.userState === this.REGISTRAION_STATUS_REGISTERED) {
-                return _react2.default.createElement(_IComming2.default, { unregisterAction: this.unregister });
+                return _react2.default.createElement(_IComming2.default, null);
             }
         }
     }, {
@@ -39710,6 +39717,41 @@ var PokeTeam = function (_React$Component) {
                         'div',
                         { className: 'col-md-6' },
                         _react2.default.createElement(_IncomingTrainers2.default, { incoming: this.state.incomingTrainers })
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { id: 'confirmResignModal', className: 'modal fade', role: 'dialog' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'modal-dialog', role: 'document' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'modal-content' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'modal-body' },
+                                _react2.default.createElement(
+                                    'p',
+                                    null,
+                                    'Are you sure?'
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'modal-footer' },
+                                _react2.default.createElement(
+                                    'button',
+                                    { type: 'button', className: 'btn btn-primary', onClick: this.unregister },
+                                    'Yes'
+                                ),
+                                _react2.default.createElement(
+                                    'button',
+                                    { type: 'button', className: 'btn btn-alert', onClick: this.notUnregister },
+                                    'No'
+                                )
+                            )
+                        )
                     )
                 )
             );
@@ -40235,7 +40277,7 @@ var IComming = function (_React$Component) {
                     { className: "col-md-12" },
                     _react2.default.createElement(
                         "button",
-                        { type: "button", className: "btn btn-danger btn-lg i-will-come-button", onClick: this.props.unregisterAction },
+                        { type: "button", className: "btn btn-danger btn-lg i-will-come-button", "data-target": "#confirmResignModal", "data-toggle": "modal" },
                         "Resign"
                     )
                 )

@@ -22,3 +22,14 @@ ul.borderless li {
 .incoming-trainers {
     font-size: 17px;
 }
+
+#confirmResignModal .modal-dialog {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+#confirmResignModal .modal-content {
+    height: 100%;
+    width: 100%;
+}

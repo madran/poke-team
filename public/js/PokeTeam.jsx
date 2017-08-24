@@ -82,6 +82,10 @@ export default class PokeTeam extends React.Component
         this.setState({ userState: this.REGISTRAION_STATUS_NOT_REGISTERED });
     }
     
+    notUnregister() {
+        $('#confirmResignModal').modal('toggle');
+    }
+    
     unregister(event) {
         event.preventDefault();
         
@@ -105,6 +109,8 @@ export default class PokeTeam extends React.Component
                     this.setState({
                         userState: this.REGISTRAION_STATUS_NOT_REGISTERED
                     });
+                    
+                    $('#confirmResignModal').modal('toggle');
                     
                     this.showMessage('success', 'success');
                 }
@@ -163,7 +169,7 @@ export default class PokeTeam extends React.Component
         }
         
         if(this.state.userState === this.REGISTRAION_STATUS_REGISTERED){
-            return <IComming unregisterAction={this.unregister} />;
+            return <IComming />;
         }
     }
     
@@ -206,6 +212,20 @@ export default class PokeTeam extends React.Component
                     </div>
                     <div className="col-md-6">
                         <IncomingTrainers incoming={this.state.incomingTrainers}/>
+                    </div>
+                </div>
+                
+                <div id="confirmResignModal" className="modal fade" role="dialog">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <p>Are you sure?</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-primary" onClick={this.unregister}>Yes</button>
+                                <button type="button" className="btn btn-alert" onClick={this.notUnregister}>No</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
