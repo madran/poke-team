@@ -39741,14 +39741,22 @@ var PokeTeam = function (_React$Component) {
                                 'div',
                                 { className: 'modal-footer' },
                                 _react2.default.createElement(
-                                    'button',
-                                    { type: 'button', className: 'btn btn-primary', onClick: this.unregister },
-                                    'Yes'
+                                    'div',
+                                    { className: 'col-md-6' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn btn-primary app-button', onClick: this.unregister },
+                                        'Yes'
+                                    )
                                 ),
                                 _react2.default.createElement(
-                                    'button',
-                                    { type: 'button', className: 'btn btn-alert', onClick: this.notUnregister },
-                                    'No'
+                                    'div',
+                                    { className: 'col-md-6' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn btn-alert app-button', onClick: this.notUnregister },
+                                        'No'
+                                    )
                                 )
                             )
                         )
@@ -40064,7 +40072,7 @@ var IWillComeButton = function (_React$Component) {
                     { className: "col-md-12 text-center" },
                     _react2.default.createElement(
                         "button",
-                        { type: "button", className: "btn btn-success i-will-come-button", onClick: this.props.showRegisterFormAction },
+                        { type: "button", className: "btn btn-success app-button", onClick: this.props.showRegisterFormAction },
                         "I will come"
                     )
                 )
@@ -40207,7 +40215,7 @@ var IWillComeForm = function (_React$Component) {
                             { className: 'form-group col-md-6 i-will-come-buttons' },
                             _react2.default.createElement(
                                 'button',
-                                { type: 'button', className: 'btn btn-danger btn-lg i-will-come-button', onClick: this.props.hideRegisterFormAction },
+                                { type: 'button', className: 'btn btn-danger btn-lg app-button', onClick: this.props.hideRegisterFormAction },
                                 'Back'
                             )
                         ),
@@ -40216,7 +40224,7 @@ var IWillComeForm = function (_React$Component) {
                             { className: 'form-group col-md-6 i-will-come-buttons' },
                             _react2.default.createElement(
                                 'button',
-                                { type: 'button', className: 'btn btn-success btn-lg i-will-come-button', 'data-style': 'zoom-out', onClick: this.save },
+                                { type: 'button', className: 'btn btn-success btn-lg app-button', 'data-style': 'zoom-out', onClick: this.save },
                                 'Save'
                             )
                         )
@@ -40277,7 +40285,7 @@ var IComming = function (_React$Component) {
                     { className: "col-md-12" },
                     _react2.default.createElement(
                         "button",
-                        { type: "button", className: "btn btn-danger btn-lg i-will-come-button", "data-target": "#confirmResignModal", "data-toggle": "modal" },
+                        { type: "button", className: "btn btn-danger btn-lg app-button", "data-target": "#confirmResignModal", "data-toggle": "modal" },
                         "Resign"
                     )
                 )
@@ -40993,6 +41001,7 @@ var GymWithRaid = function (_React$Component) {
                     timeToRaidEnd: String('00' + hours).slice(-2) + ':' + String('00' + minutes).slice(-2) + ':' + String('00' + seconds).slice(-2)
                 });
             } else {
+                this.props.changeGymTypeAction(this.props.gym.id);
                 window.clearInterval(this.timerId);
             }
         }
@@ -41074,6 +41083,7 @@ var GymMap = function (_React$Component) {
         };
 
         _this.loadGymData = _this.loadGymData.bind(_this);
+        _this.changeGymType = _this.changeGymType.bind(_this);
 
         _this.loadGymData();
         setInterval(_this.loadGymData, 5000);
@@ -41097,13 +41107,27 @@ var GymMap = function (_React$Component) {
             });
         }
     }, {
+        key: 'changeGymType',
+        value: function changeGymType(gymId) {
+            var gyms = this.state.gyms.map(function (gym, index) {
+                if (gym.id === gymId) {
+                    gym.pokemonName = '';
+                }
+                return gym;
+            });
+
+            this.setState({
+                gyms: gyms
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this2 = this;
 
             var gyms = this.state.gyms.map(function (gym, index) {
                 if (gym.pokemonName.length > 0) {
-                    return _react2.default.createElement(_GymWithRaid2.default, { key: gym.id, gym: gym, showGymAction: _this2.props.showGymAction });
+                    return _react2.default.createElement(_GymWithRaid2.default, { key: gym.id, gym: gym, showGymAction: _this2.props.showGymAction, changeGymTypeAction: _this2.changeGymType });
                 } else {
                     return _react2.default.createElement(_Gym2.default, { key: gym.id });
                 }

@@ -45,6 +45,7 @@ export default class GymWithRaid extends React.Component
                                String('00' + seconds).slice(-2)
             });
         } else {
+            this.props.changeGymTypeAction(this.props.gym.id);
             window.clearInterval(this.timerId)
         }
     }

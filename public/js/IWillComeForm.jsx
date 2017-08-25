@@ -51,10 +51,10 @@ export default class IWillComeForm extends React.Component
                     </div>
                     <div className="form-row mt-3">
                         <div className="form-group col-md-6 i-will-come-buttons">
-                            <button type="button" className="btn btn-danger btn-lg i-will-come-button" onClick={this.props.hideRegisterFormAction}>Back</button>
+                            <button type="button" className="btn btn-danger btn-lg app-button" onClick={this.props.hideRegisterFormAction}>Back</button>
                         </div>
                         <div className="form-group col-md-6 i-will-come-buttons">
-                            <button type="button" className="btn btn-success btn-lg i-will-come-button" data-style="zoom-out" onClick={this.save}>Save</button>
+                            <button type="button" className="btn btn-success btn-lg app-button" data-style="zoom-out" onClick={this.save}>Save</button>
                         </div>
                     </div>
                 </form>

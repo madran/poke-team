@@ -13,6 +13,7 @@ export default class GymMap extends React.Component
         };
         
         this.loadGymData = this.loadGymData.bind(this);
+        this.changeGymType = this.changeGymType.bind(this);
 
         this.loadGymData();
         setInterval(this.loadGymData, 5000);
@@ -35,10 +36,23 @@ export default class GymMap extends React.Component
         });
     }
     
+    changeGymType(gymId) {
+        var gyms = this.state.gyms.map((gym, index) => {
+            if(gym.id === gymId) {
+                gym.pokemonName = '';
+            }
+             return gym;
+        });
+        
+        this.setState({
+            gyms: gyms
+        });
+    }
+    
     render() {
         var gyms = this.state.gyms.map((gym, index) => {
             if(gym.pokemonName.length > 0) {
-                return <GymWithRaid key={gym.id} gym={gym} showGymAction={this.props.showGymAction} />;
+                return <GymWithRaid key={gym.id} gym={gym} showGymAction={this.props.showGymAction} changeGymTypeAction={this.changeGymType} />;
             } else {
                 return <Gym key={gym.id} />;
             }

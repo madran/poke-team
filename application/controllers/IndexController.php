@@ -59,7 +59,7 @@ class IndexController extends Zend_Controller_Action
             if ($this->getRequest()->isPost()) {
                 $gyms = [
                     ['id' => 1, 'raidEndTime' => '01:57:49', 'raidLvl' => 3, 'pokemonName' => 'Pika'],
-                    ['id' => 2, 'raidEndTime' => '00:23:01', 'raidLvl' => 5, 'pokemonName' => 'Piku'],
+                    ['id' => 2, 'raidEndTime' => '00:00:10', 'raidLvl' => 5, 'pokemonName' => 'Piku'],
                     ['id' => 3, 'raidEndTime' => '01:23:23', 'raidLvl' => 1, 'pokemonName' => 'Pike'],
                     ['id' => 4, 'raidEndTime' => '', 'raidLvl' => '', 'pokemonName' => '']
                 ];

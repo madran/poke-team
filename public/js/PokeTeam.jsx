@@ -222,8 +222,12 @@ export default class PokeTeam extends React.Component
                                 <p>Are you sure?</p>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={this.unregister}>Yes</button>
-                                <button type="button" className="btn btn-alert" onClick={this.notUnregister}>No</button>
+                                <div className="col-md-6">
+                                    <button type="button" className="btn btn-primary app-button" onClick={this.unregister}>Yes</button>
+                                </div>
+                                <div className="col-md-6">
+                                    <button type="button" className="btn btn-alert app-button" onClick={this.notUnregister}>No</button>
+                                </div>
                             </div>
                         </div>
                     </div>
