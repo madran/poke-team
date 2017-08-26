@@ -69,10 +69,8 @@ export default class Timer extends React.Component
     render() {
         var date = new Date(this.state.timeToRaidEnd);
         return (
-            <div id="poke-team-timer" className="row">
-                <div className="col-12 text-center">
-                    {this.state.timeToRaidEnd}
-                </div>
+            <div id="poke-team-timer" className="col-12 text-center">
+                {this.state.timeToRaidEnd}
             </div>
         );
     }

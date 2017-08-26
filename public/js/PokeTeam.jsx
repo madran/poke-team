@@ -48,6 +48,10 @@ export default class PokeTeam extends React.Component
         }
     }
     
+    close() {
+        $('#gymModal').modal('toggle');
+    }
+    
     loadGymData() {
         $.ajax({
             url: '/gym',
@@ -207,7 +211,14 @@ export default class PokeTeam extends React.Component
         return (
             <div id="poke-team" className="container-fluid">
                 {this.state.messages}
-                <Timer timeToRaidEnd={this.props.gym.timeToRaidEnd} />
+                <div className="row mb-3">
+                    <div className="col-md-10">
+                        <Timer timeToRaidEnd={this.props.gym.timeToRaidEnd} />
+                    </div>
+                    <div className="col-md-2 text-center">
+                        <button type="button" className="btn btn-danger" onClick={this.close}><b>x</b></button>
+                    </div>
+                </div>
                 <div className="row">
                     <div className="col-md-6">
                         <PokemonInfo pokemonName={this.props.gym.pokemonName} raidLvl={this.props.gym.raidLvl} />

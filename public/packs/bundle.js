@@ -39541,6 +39541,11 @@ var PokeTeam = function (_React$Component) {
             }
         }
     }, {
+        key: 'close',
+        value: function close() {
+            $('#gymModal').modal('toggle');
+        }
+    }, {
         key: 'loadGymData',
         value: function loadGymData() {
             $.ajax({
@@ -39706,7 +39711,28 @@ var PokeTeam = function (_React$Component) {
                 'div',
                 { id: 'poke-team', className: 'container-fluid' },
                 this.state.messages,
-                _react2.default.createElement(_Timer2.default, { timeToRaidEnd: this.props.gym.timeToRaidEnd }),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'row mb-3' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-10' },
+                        _react2.default.createElement(_Timer2.default, { timeToRaidEnd: this.props.gym.timeToRaidEnd })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-2 text-center' },
+                        _react2.default.createElement(
+                            'button',
+                            { type: 'button', className: 'btn btn-danger', onClick: this.close },
+                            _react2.default.createElement(
+                                'b',
+                                null,
+                                'x'
+                            )
+                        )
+                    )
+                ),
                 _react2.default.createElement(
                     'div',
                     { className: 'row' },
@@ -39878,12 +39904,8 @@ var Timer = function (_React$Component) {
             var date = new Date(this.state.timeToRaidEnd);
             return _react2.default.createElement(
                 'div',
-                { id: 'poke-team-timer', className: 'row' },
-                _react2.default.createElement(
-                    'div',
-                    { className: 'col-12 text-center' },
-                    this.state.timeToRaidEnd
-                )
+                { id: 'poke-team-timer', className: 'col-12 text-center' },
+                this.state.timeToRaidEnd
             );
         }
     }]);
