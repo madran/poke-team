@@ -39534,6 +39534,10 @@ var PokeTeam = function (_React$Component) {
 
             if (prevId != this.props.gym.id) {
                 this.loadGymData();
+                var interval = setInterval(this.loadGymData, 5000);
+                $('#gymModal').on('hidden.bs.modal', function () {
+                    clearInterval(interval);
+                });
             }
         }
     }, {
@@ -39828,6 +39832,8 @@ var Timer = function (_React$Component) {
     _createClass(Timer, [{
         key: 'componentWillReceiveProps',
         value: function componentWillReceiveProps(nextProps) {
+            if (this.props.timeToRaidEnd == nextProps.timeToRaidEnd) return false;
+
             var raidEndTime = nextProps.timeToRaidEnd.split(":");
             raidEndTime = raidEndTime.map(function (value, index) {
                 return parseInt(value);

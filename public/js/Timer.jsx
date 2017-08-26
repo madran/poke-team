@@ -25,6 +25,8 @@ export default class Timer extends React.Component
     }
     
     componentWillReceiveProps(nextProps) {
+        if(this.props.timeToRaidEnd == nextProps.timeToRaidEnd) return false;
+        
         var raidEndTime = nextProps.timeToRaidEnd.split(":");
         raidEndTime = raidEndTime.map((value, index) => {
             return parseInt(value);

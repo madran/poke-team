@@ -41,6 +41,10 @@ export default class PokeTeam extends React.Component
         
         if(prevId != this.props.gym.id) {
             this.loadGymData();
+            var interval = setInterval(this.loadGymData, 5000);
+            $('#gymModal').on('hidden.bs.modal', function () {
+                clearInterval(interval);
+            })
         }
     }
     
